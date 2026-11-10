@@ -730,6 +730,44 @@ a{color:var(--brand-dark)}
 </footer>
 
 <script>
+/* Analítica: PostHog (región UE) en modo sin cookies (decisión de María, 10/11/2026). Todo vive en memoria:
+   no guarda nada en el navegador, así que no hace falta banner y cada visita cuenta como nueva. Sin
+   grabaciones de sesión ni encuestas, y respeta «Do Not Track». Nunca se manda el email: solo eventos
+   («ve_seccion», «llega_al_formulario», «faq_abierta», «apuntarse», «apuntarse_error»), las visitas,
+   hasta dónde se baja (al salir) y los clics en enlaces y botones. Mientras falte la clave, no se carga. */
+(() => {
+  const POSTHOG_CLAVE = 'PENDIENTE_CLAVE_DE_POSTHOG';
+  const cola = [];
+  window.medir = (evento, datos) => { window.posthog && posthog.__loaded ? posthog.capture(evento, datos) : cola.push([evento, datos]); };
+  if (POSTHOG_CLAVE.startsWith('PENDIENTE')) { window.medir = () => {}; return; }
+  const s = document.createElement('script');
+  s.src = 'https://eu-assets.i.posthog.com/static/array.js'; s.async = true;
+  s.onload = () => {
+    posthog.init(POSTHOG_CLAVE, {
+      api_host: 'https://eu.i.posthog.com',
+      persistence: 'memory', person_profiles: 'identified_only',
+      autocapture: true, capture_pageview: true, capture_pageleave: true,
+      disable_session_recording: true, disable_surveys: true, respect_dnt: true,
+      loaded: ph => cola.splice(0).forEach(([e, d]) => ph.capture(e, d)),
+    });
+  };
+  document.head.appendChild(s);
+
+  // Hasta dónde llega la gente: cada sección cuenta una vez por visita, cuando se ve al menos un tercio.
+  const vistas = new IntersectionObserver(entradas => entradas.forEach(en => {
+    if (!en.isIntersecting) return;
+    vistas.unobserve(en.target);
+    const id = en.target.id === 'form-beta' ? null : (en.target.getAttribute('aria-labelledby') || '').replace(/^t-/, '');
+    id ? medir('ve_seccion', { seccion: id }) : medir('llega_al_formulario');
+  }), { threshold: 0.33 });
+  document.querySelectorAll('section[aria-labelledby], #form-beta').forEach(el => vistas.observe(el));
+
+  document.querySelectorAll('.faq details').forEach(d => d.addEventListener('toggle', () => {
+    if (d.open) medir('faq_abierta', { pregunta: d.querySelector('summary').textContent.trim() });
+  }));
+})();
+</script>
+<script>
 document.documentElement.classList.add('js');
 const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -849,7 +887,7 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!okE) return email.focus(); if (!plat) return f.querySelector('input[name=plataforma]').focus(); if (!okC) return f.elements.consentimiento.focus();
     if (f.elements.web.value) return; // trampa para bots: una persona no rellena este campo
     const token = widget !== null && window.turnstile ? turnstile.getResponse(widget) : '';
-    if (!token) { err('beta-reto-error').hidden = false; return; }
+    if (!token) { err('beta-reto-error').hidden = false; medir('apuntarse_error', { motivo: 'reto sin completar' }); return; }
     boton.disabled = true; boton.textContent = 'Apuntándote…';
     try {
       const r = await fetch(`${SUPABASE_URL}/functions/v1/unirse-a-la-lista`, {
@@ -863,8 +901,10 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
           : d.error === 'reto' ? 'No hemos podido comprobar que no eres un robot. Vuelve a intentarlo.'
           : 'No hemos podido apuntarte. Revisa el email y vuelve a probar.');
       }
+      medir('apuntarse', { plataforma: plat.value, origen: origen.slice(0, 100) || null });
       f.hidden = true; const ok = document.getElementById('beta-ok'); ok.hidden = false; ok.focus();
     } catch (e) {
+      medir('apuntarse_error', { motivo: e instanceof TypeError ? 'conexion' : e.message });
       fallo(e instanceof TypeError ? 'No hemos podido apuntarte. Revisa tu conexión y vuelve a probar.' : e.message);
       if (widget !== null && window.turnstile) turnstile.reset(widget);
     } finally { boton.disabled = false; boton.textContent = 'Apuntarme gratis'; }
