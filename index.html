@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="es-ES">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keinext · Organiza viajes y planes en grupo sin caos</title>
+<meta name="description" content="La app para decidir y organizar planes en grupo: votad fechas y destino, montad el día a día y tened las reservas a mano. En español y gratis. Pruébala antes que nadie.">
+<link rel="canonical" href="https://keinext.com/">
+<meta name="theme-color" content="#f9f6f4">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<!-- Vista previa al compartir (WhatsApp, Instagram, X, LinkedIn) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Keinext">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://keinext.com/">
+<meta property="og:title" content="Keinext · Del ¿cuándo podéis? al plan cerrado">
+<meta property="og:description" content="La app para decidir y organizar planes en grupo. Sin perseguir a nadie. Pruébala antes que nadie.">
+<meta property="og:image" content="https://keinext.com/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Keinext: del ¿cuándo podéis? al plan cerrado, con la pantalla de Inicio de la app">
+<meta name="twitter:card" content="summary_large_image">
+<!-- Landing pública de Keinext (keinext.com). Origen del diseño: design/2026-11-10-landing-alta-fidelidad.html -->
+<style>
+/* Open Sans servida desde keinext.com (sin Google Fonts: las visitas no mandan su IP a Google) */
+@font-face{font-family:"Open Sans";font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fuentes/OpenSans_400Regular.ttf) format("truetype")}
+@font-face{font-family:"Open Sans";font-style:italic;font-weight:400;font-display:swap;src:url(/assets/fuentes/OpenSans_400Regular_Italic.ttf) format("truetype")}
+@font-face{font-family:"Open Sans";font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fuentes/OpenSans_600SemiBold.ttf) format("truetype")}
+@font-face{font-family:"Open Sans";font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fuentes/OpenSans_700Bold.ttf) format("truetype")}
+@font-face{font-family:"Open Sans";font-style:normal;font-weight:800;font-display:swap;src:url(/assets/fuentes/OpenSans_800ExtraBold.ttf) format("truetype")}
+/* Dirección: editorial y cálida. Tipografía enorme (Open Sans 800) contra cursiva fina (400),
+   un solo protagonista animado (el móvil con capturas reales) y pantallas de color para las frases clave. */
+:root{
+  /* tokens/keinext.tokens.json (solo modo claro, decisión del 20/10/2026) */
+  --brand:#cd7f67;          /* Color-Brand-Primary · solo marca sin texto */
+  --brand-300:#ebc2b6;      /* Terracota/300 */
+  --brand-dark:#9a513b;     /* Color-Button-Main · Terracota/700 */
+  --brand-lighter:#f8ece8;  /* Color-Brand-Lighter */
+  --brand-50:#fcf6f4;       /* Terracota/50 */
+  --brand-darker:#391e16;   /* Color-Brand-Darker · Terracota/950 */
+  --action:#d4722a;         /* Orange/500 */
+  --action-100:#fbf0e6;     /* Orange/100 */
+  --action-700:#a85520;     /* Orange/700 */
+  --sand:#f9f6f4;           /* Background-Sand */
+  --bg-main:#f9f9f9;        /* Color-Background-Main (fondo de la app) */
+  --white:#ffffff;
+  --error:#a3483b;          /* Color-Error-Main */
+  --text:#2b2421;           /* Color-Text-Main */
+  --text-2:#605348;         /* Color-Text-Secondary */
+  --text-3:#776957;         /* Color-Text-Light */
+  --line:#e5e3dc;           /* Black/100 */
+  --sombra:0 30px 60px -20px rgba(57,30,22,.35),0 18px 36px -18px rgba(57,30,22,.25);
+  --f:"Open Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --ease:cubic-bezier(.2,.7,.1,1);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:80px;scroll-behavior:smooth}
+body{font-family:var(--f);color:var(--text);background:var(--sand);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{color:var(--brand-dark)}
+:focus-visible{outline:3px solid var(--action);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1160px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* Cursiva = la voz del grupo / el matiz. Un solo estilo en toda la página: Text-Secondary sobre fondos claros
+   y Brand-Lighter sobre fondos oscuros (único cambio, por contraste). */
+.cita{font-style:italic;font-weight:400;letter-spacing:-.01em;color:var(--text-2)}
+.t-osc .cita,.color .cita,.color .rota,.roles-sec .cita,.final .cita{color:var(--brand-lighter)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+/* Etiqueta de sección: un único estilo en toda la página (los párrafos de cada bloque la excluyen con :not(.eti)) */
+.eti{font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-dark)}
+/* border:0 quita el borde por defecto de <button> (el «stroke» del botón del formulario) */
+.btn{font-family:inherit;border:0;cursor:pointer;-webkit-appearance:none;appearance:none;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 28px;border-radius:999px;background:var(--brand-dark);color:var(--white);font-weight:700;font-size:1rem;text-decoration:none;transition:transform .2s var(--ease),background .2s}
+.btn:hover{background:var(--brand-darker);transform:translateY(-1px)}
+.btn svg{width:18px;height:18px;transition:transform .2s var(--ease)}
+.btn:hover svg{transform:translateX(3px)}
+
+/* ── Móvil con capturas reales ───────────────────────────── */
+/* Marco con la proporción real: la pantalla interior mide exactamente 393:852, como los frames de Figma */
+.movil{position:relative;border-radius:44px;padding:9px;background:#1d1513;box-shadow:var(--sombra),inset 0 0 0 1.5px #4a3a35}
+.movil::after{content:"";position:absolute;top:18px;left:50%;transform:translateX(-50%);width:30%;height:22px;border-radius:999px;background:#1d1513;z-index:3}
+/* Capturas 1:1, sin recortes ni desplazamientos: la pantalla tiene la proporción del frame y la imagen la llena exacta */
+.pantalla{position:relative;width:100%;aspect-ratio:393/852;border-radius:36px;overflow:hidden;background:var(--bg-main)}
+.pantalla img{position:absolute;inset:0;width:100%;height:100%}
+
+/* ── 1 · Hero ─────────────────────────────────────────────── */
+.hero{position:relative;padding-top:32px;padding-bottom:64px;overflow:hidden;background:
+  radial-gradient(60% 40% at 85% 30%,rgba(205,127,103,.22),transparent 70%),
+  radial-gradient(50% 35% at 0% 90%,rgba(212,114,42,.10),transparent 70%),var(--sand)}
+.hero .logo{display:inline-flex;min-height:44px;align-items:center}
+.logotipo{height:26px;width:auto;aspect-ratio:141.8/24;color:var(--brand-darker)}
+/* Aire entre logo y titular (proximidad: el logo es la cabecera, no parte del titular) */
+.hero-grid{display:grid;gap:48px;margin-top:clamp(64px,11vh,128px)}
+@media (min-width:900px){.hero-grid{grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);align-items:center;gap:64px}}
+/* Titular en bloques que no se parten («Del», «¿cuándo podéis?», «al plan cerrado.»): nunca queda «al» solo.
+   Tamaño calculado para que «al plan cerrado.» (7,45 em) quepa: móvil 11,4vw (3 líneas), escritorio hasta 4,75rem (2 líneas). */
+.hero h1{font-size:max(2.25rem,11.4vw);line-height:.98;font-weight:800;letter-spacing:-.035em}
+.hero h1 .u{white-space:nowrap}
+@media (min-width:900px){.hero h1{font-size:min(4.75rem,6.4vw)}}
+.hero h1 .cita{display:inline-block}
+.hero h1 .fin{color:var(--brand-dark)}
+/* Regla de columnas: el titular y su texto comparten la misma columna; el ancho lo pone el contenedor, no cada texto */
+.hero-texto{max-width:44rem}
+.hero .sub{font-size:clamp(1.125rem,4.6vw,1.375rem);color:var(--text-2);margin-top:20px}
+.hero .cta{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:32px}
+.hero .cta small{font-size:.875rem;color:var(--text-3)}
+.escena{position:relative;width:min(300px,76vw);margin:0 auto}
+.escena .movil{transform-origin:50% 80%;will-change:transform}
+.flota{position:absolute;z-index:4;background:var(--white);border-radius:18px;box-shadow:var(--sombra);padding:10px 14px;font-size:.8125rem;line-height:1.3;will-change:transform}
+.flota b{display:block;font-size:.875rem}
+.f1{top:16%;left:-9%}
+.f2{bottom:20%;right:-8%;display:flex;gap:10px;align-items:center}
+.f2 .mini-av{display:flex}
+/* Avatares con iniciales, como el componente Avatar de la app */
+.f2 .mini-av i{width:28px;height:28px;border-radius:50%;border:2px solid var(--white);margin-left:-8px;background:var(--brand-dark);color:var(--white);font:normal 700 .6875rem/24px var(--f);text-align:center}
+.f2 .mini-av i.mas{background:var(--brand-lighter);color:var(--brand-dark);width:32px;border-radius:14px}
+.f2 .mini-av i:first-child{margin-left:0;background:var(--brand)}
+.f2 .mini-av i:nth-child(3){background:var(--action)}
+.ilu{position:absolute;z-index:5;width:84px;pointer-events:none}
+.ilu-1{top:-4%;right:-6%;width:88px}
+.ilu-2{bottom:4%;left:-8%;width:72px}
+.barra-voto{height:6px;border-radius:3px;background:var(--brand-lighter);margin-top:6px;overflow:hidden}
+.barra-voto i{display:block;height:100%;width:75%;background:var(--action);border-radius:3px}
+/* Entrada del hero: una sola secuencia al cargar (Cash App), ya visible si no hay movimiento */
+@media (prefers-reduced-motion:no-preference){
+  .entra{animation:entra .9s var(--ease) both}
+  .hero h1 .l1{animation-delay:.05s}.hero h1 .cita{animation:pop .7s .35s var(--ease) both}
+  .hero h1 .l3{animation-delay:.7s}.hero .sub{animation-delay:.9s}.hero .cta{animation-delay:1s}
+  .escena{animation:sube 1.2s .4s var(--ease) both}
+  .flota,.ilu{animation:flota 6s ease-in-out infinite alternate}
+  .f2{animation-delay:-2s}.ilu-2{animation-delay:-4s}
+  @keyframes entra{from{opacity:0;transform:translateY(24px)}}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) rotate(-3deg) scale(.96)}}
+  @keyframes sube{from{opacity:0;transform:translateY(80px) rotate(4deg)}}
+  @keyframes flota{to{translate:0 -10px}}
+}
+.hero h1 span{display:inline-block}
+
+/* ── 2 · Pantalla de color (Structured) ───────────────────── */
+.color{background:var(--brand-dark);color:var(--white);height:400vh;height:400svh;position:relative}
+.color-fija{position:sticky;top:0;height:100vh;height:100svh;display:grid;place-items:center;text-align:center;overflow:hidden}
+.color h2{font-size:clamp(2.6rem,11vw,6.2rem);line-height:1;font-weight:800;letter-spacing:-.035em;text-wrap:balance}
+.color .rota{display:block;font-style:italic;font-weight:400;color:var(--brand-lighter);min-height:1.05em}
+.color .rota span{display:inline-block}
+@media (prefers-reduced-motion:no-preference){.color .rota span{animation:palabra .5s var(--ease) both}@keyframes palabra{from{opacity:0;transform:translateY(.4em);filter:blur(6px)}}}
+.color p{margin-top:24px;font-size:1.125rem;color:var(--brand-lighter);max-width:30ch;margin-inline:auto}
+.puntos{display:flex;gap:8px;justify-content:center;margin-top:32px}
+.puntos i{width:8px;height:8px;border-radius:50%;background:rgba(248,236,232,.35);transition:background .3s,transform .3s}
+.puntos i.on{background:var(--white);transform:scale(1.25)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Con «reducir movimiento», una sola pantalla con la frase completa */
+@media (prefers-reduced-motion:reduce){.color{height:auto}.color-fija{position:static;min-height:100svh}}
+
+/* ── 3 · Fases ──────────────────────────────────────────────
+   Móvil y escritorio: una pantalla fija (sticky) con el móvil y el texto de la fase; el scroll de la sección
+   (4 pantallas) decide la fase, así texto, pantalla y stepper cambian siempre a la vez.
+   Móvil: el teléfono arriba y el texto debajo, todo centrado (comentario de María, 10/11/2026). Escritorio: texto a la izquierda y teléfono a la derecha. */
+.fases{background:var(--white);padding-top:96px}
+.fases-cab h2{font-size:clamp(2.2rem,9vw,4.4rem);line-height:1.02;font-weight:800;letter-spacing:-.03em;margin-top:12px;text-wrap:balance}
+.fases-scroll{height:400vh;height:400svh;position:relative}
+.fases-fija{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;overflow:hidden}
+.raiz{display:grid;grid-template-rows:auto auto;justify-items:center;gap:20px;width:100%}
+.lado-movil{display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:none}
+.lado-movil .movil{width:min(62vw,28svh);border-radius:32px;padding:7px}
+.lado-movil .movil::after{top:13px;height:16px}
+.lado-movil .pantalla{border-radius:26px}
+.capa{opacity:0;clip-path:inset(100% 0 0 0 round 26px);transition:clip-path .6s var(--ease),opacity .25s}
+.capa.on{opacity:1;clip-path:inset(0 0 0 0 round 26px)}
+.progreso{display:flex;gap:6px;width:min(62vw,28svh)}
+.progreso i{flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden;position:relative}
+.progreso i::after{content:"";position:absolute;inset:0;background:var(--brand-dark);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.progreso i.hecho::after{transform:scaleX(1)}
+/* Los 4 textos ocupan la misma celda: mide lo que el más largo y nada salta al cambiar */
+.pasos{display:grid;width:100%}
+.paso{grid-area:1/1;opacity:0;transform:translateY(16px);transition:opacity .4s var(--ease),transform .4s var(--ease);pointer-events:none}
+.paso.on{opacity:1;transform:none;pointer-events:auto}
+.paso-movil{display:none}
+.paso .tarj{max-width:30rem;margin-inline:auto;text-align:center}
+.paso h3{font-size:clamp(1.5rem,6vw,2.6rem);line-height:1.08;font-weight:800;letter-spacing:-.02em;margin:6px 0 10px;text-wrap:balance}
+.paso p:not(.eti){color:var(--text-2);font-size:1rem}
+@media (min-width:900px){
+  .raiz{grid-template-columns:1fr 1fr;grid-template-rows:auto;align-items:center;gap:64px}
+  .lado-movil{grid-column:2;grid-row:1;align-items:center}
+  .lado-movil .movil{width:min(300px,34vh);border-radius:44px;padding:9px}
+  .lado-movil .movil::after{top:18px;height:22px}
+  .lado-movil .pantalla{border-radius:36px}
+  .progreso{width:min(300px,34vh)}
+  .pasos{grid-column:1;grid-row:1}
+  .paso .tarj{margin-inline:0;text-align:left}
+  .paso p:not(.eti){font-size:1.0625rem}
+}
+/* Sin movimiento: lista normal, cada fase con su pantalla, sin pantalla fija */
+@media (prefers-reduced-motion:reduce){
+  .fases-scroll{height:auto}
+  .fases-fija{position:static;height:auto;padding-block:40px}
+  .lado-movil{display:none}
+  .pasos{gap:48px}
+  .paso{grid-area:auto;opacity:1;transform:none}
+  .paso-movil{display:block;width:min(240px,64vw);margin-bottom:20px}
+}
+
+/* ── 4 · Mosaico ─────────────────────────────────────────── */
+.mosaico{padding-block:96px;background:var(--sand)}
+.mosaico h2{font-size:clamp(2.2rem,9vw,4.4rem);line-height:1.02;font-weight:800;letter-spacing:-.03em;margin-top:12px;text-wrap:balance}
+/* Títulos de sección: ocupan todo el ancho de su contenido (como las tarjetas de debajo) con reparto equilibrado de líneas */
+
+.bento{display:grid;gap:14px;margin-top:40px}
+.tile{position:relative;border-radius:32px;padding:28px;overflow:hidden;min-width:0;display:flex;flex-direction:column;gap:24px}
+.tile h3{font-size:clamp(1.6rem,6vw,2.3rem);line-height:1.05;font-weight:800;letter-spacing:-.025em;text-wrap:balance}
+.tile p{font-size:1rem;margin-top:10px}
+.tile>div:first-child{max-width:30rem}
+.t-osc{background:var(--brand-darker);color:var(--white)}.t-osc p{color:var(--brand-300)}
+.t-ros{background:var(--brand-lighter)}.t-ros p,.t-bla p,.t-are p{color:var(--text-2)}
+.t-bla{background:var(--white)}
+.t-are{background:linear-gradient(160deg,#f4dcd4,var(--brand-50))}
+.recorte{border-radius:22px;overflow:hidden;box-shadow:var(--sombra);background:var(--white);max-width:340px;width:100%;align-self:center}
+.recorte img{width:100%;height:auto}
+.r-sorteo{aspect-ratio:393/430;position:relative}
+.r-sorteo img{position:absolute;left:0;top:-88%;width:100%}
+.aviso{display:flex;gap:12px;align-items:center;background:var(--white);border-radius:20px;padding:14px 16px;box-shadow:var(--sombra);max-width:360px}
+.aviso .av{flex:none;width:36px;height:36px;border-radius:50%;background:var(--brand-dark);color:var(--white);display:grid;place-items:center;font-weight:700}
+.aviso p{flex:1;margin:0;font-size:.9375rem;color:var(--text)!important}
+.aviso b{color:var(--brand-dark)}
+.enlace{display:flex;gap:12px;background:var(--white);border-radius:20px;padding:10px;box-shadow:var(--sombra);max-width:360px}
+/* Portada real del plan (la foto de la app), como sale en la vista previa del enlace */
+.enlace img{width:84px;height:84px;object-fit:cover;border-radius:12px;flex:none;display:block}
+.enlace div{display:flex;flex-direction:column;justify-content:center;font-size:.875rem;color:var(--text-2)}
+.enlace b{color:var(--text);font-size:1rem}
+.offline{background:var(--text);color:var(--white);border-radius:14px;padding:10px 14px;font-size:.875rem;max-width:360px}
+.filas{background:var(--white);border-radius:18px;padding:6px 14px;max-width:360px;box-shadow:var(--sombra)}
+.filas div{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);font-size:.9375rem}
+.filas div:last-child{border:0}
+.pdf{margin-left:auto;font-size:.6875rem;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--brand-lighter);color:var(--brand-dark)}
+/* Ilustración 3D: en móvil va en el flujo, encima del título (absoluta se perdía en el borde); en escritorio, en la esquina */
+.tile .ilu3d{width:88px;height:auto}
+@media (min-width:900px){.tile .ilu3d{position:absolute;width:110px;right:16px;top:16px}}
+@media (min-width:900px){
+  .bento{grid-template-columns:repeat(6,1fr)}
+  .t-1{grid-column:span 4;grid-row:span 2;flex-direction:row;align-items:center}
+  .t-1>*{flex:1}
+  .t-2,.t-3{grid-column:span 2}
+  .t-4{grid-column:span 6;flex-direction:row;align-items:center}
+  .t-4>*{flex:1}
+}
+/* Entradas del mosaico: cada pieza hace su gesto una vez al aparecer */
+@media (prefers-reduced-motion:no-preference){
+  .js .anima{opacity:0;transform:translateY(28px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .js .anima.in{opacity:1;transform:none}
+  .js .t-2 .aviso{transform:translateX(-30px) rotate(-2deg)}
+  .js .t-2.in .aviso{transform:rotate(-2deg);transition:transform .8s .2s var(--ease)}
+  .js .t-3 .enlace{transform:translateY(20px) rotate(2deg)}
+  .js .t-3.in .enlace{transform:rotate(2deg);transition:transform .8s .2s var(--ease)}
+  .js .t-4 .offline{transform:translateY(-16px);opacity:0}
+  .js .t-4.in .offline{transform:none;opacity:1;transition:all .6s .3s var(--ease)}
+}
+
+/* Títulos de sección: un solo estilo en toda la página. En escritorio ocupan 7 de 12 columnas (≈58 %) y el mismo
+   tamaño, estén en un bloque a todo el ancho o en una columna; la cursiva va en línea, sin saltos forzados. */
+:is(.sec-h2,.fases-cab h2,.mosaico h2,.problema h2){text-wrap:balance}
+@media (min-width:900px){
+  :is(.sec-h2,.fases-cab h2,.mosaico h2,.problema h2){font-size:clamp(2.8rem,4.4vw,4.25rem);line-height:1.02;max-width:58%}
+  :is(.faq-grid,.marcas-grid,.final-grid,.problema-grid) :is(.sec-h2,h2){max-width:none}
+}
+
+/* ── Barra compacta: aparece al dejar atrás el CTA del hero y se esconde si se ve otro CTA ── */
+.barra{position:fixed;top:0;left:0;right:0;z-index:20;padding-top:env(safe-area-inset-top,0px);background:var(--sand);border-bottom:1px solid var(--line);transform:translateY(-100%);visibility:hidden;transition:transform .3s var(--ease),visibility 0s .3s}
+.barra.visible{transform:none;visibility:visible;transition:transform .3s var(--ease)}
+.barra .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.barra .logotipo{height:22px}
+.btn-sm{min-height:44px;padding:0 18px;font-size:.9375rem}
+@media (prefers-reduced-motion:reduce){.barra,.barra.visible{transition:none}}
+
+/* ── Problema ─────────────────────────────────────────────── */
+.problema{padding-block:96px;background:var(--white)}
+.problema-grid{display:grid;gap:48px;align-items:center}
+.problema h2,.sec-h2{font-size:clamp(2.2rem,9vw,4.4rem);line-height:1.02;font-weight:800;letter-spacing:-.03em;margin-top:12px;text-wrap:balance}
+.dolores{list-style:none;padding:0;display:grid;gap:14px;margin-top:28px}
+.dolores li{display:flex;gap:14px;align-items:flex-start;font-size:1.0625rem;color:var(--text-2)}
+.dolores li::before{content:"✕";flex:none;width:28px;height:28px;border-radius:50%;background:var(--brand-lighter);color:var(--brand-dark);font-weight:800;display:grid;place-items:center;font-size:.8125rem}
+.cifra{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:end;margin-top:36px;padding-top:24px;border-top:1px solid var(--line)}
+.cifra strong{font-size:clamp(4rem,18vw,6.5rem);font-weight:800;line-height:.85;letter-spacing:-.04em;color:var(--brand-dark)}
+.cifra span{font-size:1.125rem;line-height:1.35;padding-bottom:6px}
+.fuente{font-size:.8125rem;color:var(--text-3);margin-top:8px}
+/* Chat de grupo genérico (sin marca de ninguna app de mensajería), dentro del mismo marco de móvil */
+.chat-movil{width:min(300px,78vw);margin-inline:auto}
+.chat-pantalla{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--sand);font-size:.875rem}
+.chat-cab{display:flex;gap:10px;align-items:center;padding:48px 14px 10px;background:var(--white);border-bottom:1px solid var(--line)}
+.chat-cab .av{width:34px;height:34px;border-radius:50%;background:var(--brand-lighter);display:grid;place-items:center}
+.chat-cab b{display:block;font-size:.9375rem}.chat-cab span{font-size:.75rem;color:var(--text-3)}
+.chat-hilo{display:flex;flex-direction:column;gap:8px;padding:12px;overflow:hidden}
+.sinleer{align-self:center;font-size:.6875rem;font-weight:700;background:var(--white);color:var(--text-2);border-radius:999px;padding:3px 10px}
+.msg{max-width:84%;padding:7px 11px;border-radius:14px 14px 14px 4px;background:var(--white);line-height:1.3}
+.msg i{display:block;font-style:normal;font-size:.6875rem;font-weight:700;color:var(--brand-dark)}
+.msg.yo{align-self:flex-end;border-radius:14px 14px 4px 14px;background:var(--brand-lighter)}
+.encuesta{background:var(--white);border-radius:14px;padding:9px 11px;max-width:84%}
+.encuesta b{display:block;margin-bottom:4px}
+.op{display:flex;justify-content:space-between;padding:3px 0;border-top:1px solid var(--line)}
+@media (prefers-reduced-motion:no-preference){
+  .js .chat-hilo>*{opacity:0;transform:translateY(10px);transition:opacity .4s var(--ease),transform .4s var(--ease)}
+  .js .chat-hilo.in>*{opacity:1;transform:none}
+  .js .chat-hilo.in>*:nth-child(2){transition-delay:.15s}.js .chat-hilo.in>*:nth-child(3){transition-delay:.3s}
+  .js .chat-hilo.in>*:nth-child(4){transition-delay:.45s}.js .chat-hilo.in>*:nth-child(5){transition-delay:.6s}.js .chat-hilo.in>*:nth-child(6){transition-delay:.9s}
+}
+
+/* ── Planes: carrusel de Tarjeta/Plan (portada de ilustración, variante real del DS) ── */
+.planes{padding-block:96px 72px;background:var(--brand-50);overflow:hidden}
+.planes .lead{font-size:1.125rem;color:var(--text-2);margin-top:16px;max-width:30rem}
+.carrusel{list-style:none;display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:36px calc(50% - 125px);margin:0;scrollbar-width:none}
+.carrusel::-webkit-scrollbar{display:none}
+.pcard{flex:none;width:250px;scroll-snap-align:center;background:var(--white);border-radius:24px;overflow:hidden;box-shadow:0 18px 40px -16px rgba(57,30,22,.25);transform:scale(var(--z,1));opacity:var(--o,1);transition:transform .15s linear,opacity .15s linear}
+@media (hover:hover) and (pointer:fine){.pcard:hover{--z:1.04!important;--o:1!important}}
+.pcover{height:150px;position:relative;display:grid;place-items:center;background:linear-gradient(160deg,var(--brand-lighter),var(--brand-300))}
+.pcover img{width:104px;height:104px}
+/* Con destino decidido, la portada es la foto (como en la app, que la sugiere desde Unsplash); sin destino, la ilustración */
+.pcover.foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ptag{position:absolute;top:12px;left:12px;font-size:.6875rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border-radius:999px;padding:4px 10px;background:var(--white);color:var(--brand-dark)}
+.ptag.vot{background:var(--action-100);color:var(--action-700)}
+.pbody{padding:14px 16px 18px;display:grid;gap:4px}
+.pbody b{font-size:1.0625rem}.pbody>span{font-size:.875rem;color:var(--text-2)}
+.pav{display:flex;align-items:center;margin-top:8px}
+.pav i,.pav em{width:28px;height:28px;border-radius:50%;border:2px solid var(--white);margin-left:-8px;display:grid;place-items:center;font:normal 700 .6875rem var(--f);background:var(--brand-dark);color:var(--white)}
+.pav i:first-child{margin-left:0}.pav i:nth-child(2){background:var(--brand)}.pav i:nth-child(3){background:var(--action)}
+.pav em{background:var(--brand-lighter);color:var(--brand-dark);width:34px;border-radius:14px}
+.nota{text-align:center;color:var(--text-2)}
+@media (prefers-reduced-motion:reduce){.pcard{transform:none!important;opacity:1!important}}
+
+/* ── Roles (oscuro) ───────────────────────────────────────── */
+.roles-sec{padding-block:96px;background:var(--brand-darker);color:var(--white)}
+.roles-sec .sec-h2 .cita{color:var(--brand-lighter)}
+.roles{display:grid;gap:16px;margin-top:40px}
+.rol{border:1px solid rgba(248,236,232,.22);border-radius:28px;padding:28px}
+.rol .eti{color:var(--brand-300)}
+.rol h3{font-size:clamp(1.5rem,6vw,2rem);font-weight:800;line-height:1.1;letter-spacing:-.02em;margin:8px 0 14px}
+.rol ul{list-style:none;padding:0;display:grid;gap:10px;color:var(--brand-lighter)}
+.rol li{display:flex;gap:10px}.rol li::before{content:"→";color:var(--brand-300)}
+.cta-centro{display:flex;justify-content:center;margin-top:40px}
+.cta-centro .btn{width:100%;max-width:360px}
+.roles-sec .btn{background:var(--white);color:var(--brand-darker)}
+
+/* ── Prueba social: más aire. Cifras en una fila con filete, una cita protagonista grande sin caja y dos secundarias ── */
+.social{padding-block:112px;background:var(--white);overflow:hidden}
+.nums{display:grid;grid-template-columns:1fr;gap:32px;margin-top:56px}
+.num{border-top:1px solid var(--line);padding-top:20px}
+.num strong{display:block;font-size:clamp(3.5rem,15vw,6rem);font-weight:800;line-height:.9;letter-spacing:-.04em;color:var(--brand-dark)}
+.num span{display:block;margin-top:10px;color:var(--text-2);font-size:1.0625rem;max-width:26ch}
+/* Cita protagonista: comillas tipográficas gigantes (Open Sans 800) que flotan como los elementos del hero */
+.cita-grande{position:relative;margin:88px 0 0;padding:clamp(40px,10vw,72px) 0 clamp(48px,12vw,88px)}
+.cita-grande p{position:relative;z-index:1;font-style:italic;font-size:clamp(1.6rem,6.6vw,2.9rem);line-height:1.18;letter-spacing:-.01em;color:var(--text);max-width:22ch}
+/* Comillas clásicas redondeadas (forma de «66» y «99»), dibujadas en SVG para no depender de la fuente */
+.comilla{position:absolute;width:clamp(72px,20vw,128px);height:auto;fill:var(--brand-300);pointer-events:none}
+.c-abre{top:0;left:0}
+.c-cierra{bottom:0;left:min(70vw,38rem);fill:var(--brand-lighter)}
+.f-quien{position:absolute;right:0;top:-8px;display:flex;gap:10px;align-items:center}
+.f-quien .mini-av{display:flex}
+.f-quien .mini-av i{width:28px;height:28px;border-radius:50%;border:2px solid var(--white);margin-left:-8px;background:var(--brand-dark);color:var(--white);font:normal 700 .6875rem/24px var(--f);text-align:center}
+.f-quien .mini-av i:first-child{margin-left:0}.f-quien .mini-av i:nth-child(2){background:var(--brand)}.f-quien .mini-av i:nth-child(3){background:var(--action)}
+@media (max-width:899px){.f-quien{position:static;display:inline-flex;margin-top:28px}}
+@media (prefers-reduced-motion:no-preference){
+  .comilla{animation:flota 6s ease-in-out infinite alternate}
+  .c-cierra{animation-delay:-3s}
+  .f-quien{animation:flota 7s ease-in-out infinite alternate}
+}
+/* Citas secundarias como burbujas de chat, el mismo lenguaje que el chat del problema */
+.citas-peq{display:grid;gap:16px;margin-top:56px}
+.burbuja{margin:0;background:var(--brand-lighter);border-radius:22px 22px 22px 6px;padding:18px 22px;max-width:34rem}
+.burbuja.b-der{justify-self:end;border-radius:22px 22px 6px 22px;background:var(--sand)}
+.burbuja p{font-style:italic;font-size:1.125rem;line-height:1.4;color:var(--text)}
+.social .fuente{margin-top:40px}
+@media (min-width:900px){
+  .social{padding-block:144px}
+  .nums{grid-template-columns:1fr 1fr;gap:64px}
+  .citas-peq{grid-template-columns:1fr 1fr;gap:24px;align-items:end}
+}
+
+/* ── Preguntas frecuentes ────────────────────────────────── */
+.faq{padding-block:96px;background:var(--sand)}
+.faq-lista{margin-top:32px;border-top:1px solid var(--line)}
+/* Escritorio: título a la izquierda (fijo mientras se leen las respuestas) y preguntas a la derecha */
+@media (min-width:900px){.faq-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:64px;align-items:start}.faq-grid>div:first-child{position:sticky;top:96px}.faq-grid .faq-lista{margin-top:0}}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:1.125rem;font-weight:700;cursor:pointer;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";flex:none;width:28px;height:28px;border-radius:50%;background:var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a513b' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M12 6v12M6 12h12'/%3E%3C/svg%3E") center/16px no-repeat;transition:transform .25s var(--ease)}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{padding-bottom:20px;color:var(--text-2);max-width:40rem}
+
+/* ── Marcas ─────────────────────────────────────────────── */
+.marcas{padding-block:96px;background:var(--white)}
+.marcas p:not(.eti){margin-top:16px;font-size:1.125rem;color:var(--text-2);max-width:36rem}
+.encaje{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.encaje li{font-size:.875rem;font-weight:600;padding:8px 14px;border-radius:999px;background:var(--brand-50);color:var(--brand-dark)}
+.marcas-grid{display:grid;gap:48px;align-items:center}
+/* Collage de portadas: tres fotos de plan superpuestas y giradas, con la sombra de las tarjetas de la app */
+.collage{position:relative;height:340px;max-width:440px;width:100%;margin-inline:auto}
+.collage img{position:absolute;width:58%;aspect-ratio:4/5;object-fit:cover;border-radius:24px;box-shadow:var(--sombra);border:6px solid var(--white)}
+.collage .c1{left:0;top:24px;transform:rotate(-6deg)}
+.collage .c2{left:21%;top:0;transform:rotate(3deg);z-index:2}
+.collage .c3{right:0;top:40px;transform:rotate(8deg)}
+@media (min-width:900px){.marcas-grid{grid-template-columns:1.1fr .9fr;gap:64px}.collage{height:420px}}
+.btn-borde{background:transparent;color:var(--brand-dark);box-shadow:inset 0 0 0 2px var(--brand-dark)}
+.btn-borde:hover{background:var(--brand-lighter);color:var(--brand-dark)}
+
+/* ── Formulario final ───────────────────────────────────── */
+.final{padding-block:96px;background:var(--brand-dark);color:var(--white)}
+.final .sec-h2 .cita{color:var(--brand-lighter)}
+.final .sub-final{margin-top:16px;font-size:1.125rem;color:var(--brand-lighter);max-width:30rem}
+.garantias{list-style:none;padding:0;display:grid;gap:10px;margin-top:28px;color:var(--brand-lighter)}
+.garantias li{display:flex;gap:10px;align-items:center}
+.garantias li::before{content:"✓";flex:none;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.16);color:var(--white);display:grid;place-items:center;font-size:.8125rem;font-weight:800}
+.final-grid{display:grid;gap:8px}
+/* Escritorio: texto a la izquierda y formulario a la derecha, alineados arriba, para ocupar todo el ancho */
+@media (min-width:900px){.final-grid{grid-template-columns:1fr 1fr;gap:64px;align-items:center}.final-form .form-beta,.final-form .beta-ok{margin-top:0;max-width:none}}
+.form-beta{display:grid;gap:24px;margin-top:36px;background:var(--white);color:var(--text);border-radius:28px;padding:28px;max-width:34rem}
+.campo{display:grid;gap:8px;border:0;padding:0;margin:0;min-width:0}
+.campo label,.campo legend{font-size:1rem;font-weight:700}.campo legend{padding:0;margin-bottom:8px}
+.campo input[type=email]{min-height:52px;border:1px solid var(--text-3);border-radius:12px;padding:0 16px;font:400 1rem var(--f);color:var(--text);background:var(--white)}
+.campo input[aria-invalid=true]{border-color:var(--error)}
+.plataformas{display:flex;gap:8px;flex-wrap:wrap}
+.opcion{display:flex;align-items:center;gap:8px;min-height:52px;padding:0 18px;border:1px solid var(--line);border-radius:999px;font-weight:600!important;cursor:pointer}
+.opcion:has(input:checked){border-color:var(--brand-dark);background:var(--brand-lighter)}
+.opcion input{accent-color:var(--brand-dark);width:20px;height:20px;margin:0}
+.casilla{display:grid;grid-template-columns:20px 1fr;align-items:start;gap:16px}
+.casilla input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--brand-dark)}
+.casilla label{font-weight:400!important;font-size:.875rem;line-height:1.5;color:var(--text-2)}
+.error{color:var(--error);font-size:.875rem;font-weight:600}
+.form-beta .btn{width:100%}
+.form-beta .btn[disabled]{opacity:.7;cursor:progress}
+.trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.beta-ok{margin-top:36px;background:var(--white);color:var(--text);border-radius:28px;padding:28px;max-width:34rem}
+.beta-ok-t{font-size:1.75rem;font-weight:800}
+
+/* ── Pie ─────────────────────────────────────────────────── */
+/* Pie organizado: marca y lema a la izquierda, dos columnas de enlaces, y una línea final con el © */
+.pie{background:var(--brand-darker);color:var(--brand-lighter);padding-block:64px calc(32px + env(safe-area-inset-bottom,0px))}
+.pie .logotipo{color:var(--white);height:26px}
+.pie .cita{color:var(--brand-300)}
+.pie-arriba{display:grid;gap:40px}
+.pie-marca p{margin-top:12px;font-size:1.125rem;color:var(--brand-lighter)}
+.pie-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.pie-cols div{display:flex;flex-direction:column}
+.pie-t{font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand-300);margin-bottom:4px}
+.pie-cols a{color:var(--white);min-height:44px;display:inline-flex;align-items:center;text-decoration:none}
+.pie-cols a:hover{text-decoration:underline}
+.pie-abajo{margin-top:40px;padding-top:20px;border-top:1px solid rgba(248,236,232,.18)}
+.pie small{font-size:.8125rem;color:var(--brand-300)}
+@media (min-width:900px){.pie-arriba{grid-template-columns:1fr auto;align-items:start}.pie-cols{grid-template-columns:repeat(2,minmax(160px,auto));gap:64px}}
+
+@media (min-width:900px){
+  .problema-grid{grid-template-columns:1.1fr .9fr;gap:64px}
+  .roles{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logotipo" viewBox="0 0 141.8 24">
+    <g transform="translate(0 14.31)"><g>
+<path d="M17.3212 2.19774C15.8063 0.732579 13.7948 0 11.2867 0C9.82153 0 8.50537 0.235914 7.33821 0.707745C6.17105 1.17958 5.20255 1.87491 4.43272 2.79373V0.223498H0V9.54128H4.6685C4.75049 7.85597 5.24306 6.55045 6.14622 5.62472C7.13954 4.58172 8.49295 4.06023 10.2064 4.06023C11.7213 4.06023 12.8884 4.50723 13.7079 5.40122C14.5274 6.27038 14.9372 7.57413 14.9372 9.31245V9.54128H19.5934V8.71645C19.5934 5.8358 18.836 3.6629 17.3212 2.19774Z" fill="#DDB094"/>
+</g></g>
+    <g><g>
+<path d="M5.87156 11.2426L8.87633 13.876C9.50801 13.4601 11.0068 12.4188 11.9486 11.5802C12.9615 10.7249 13.918 9.80208 14.8183 8.81174C15.7187 7.7989 16.5289 6.70728 17.2492 5.53688C17.9919 4.36648 18.6221 3.11731 19.1398 1.78936L15.5611 0C15.0884 1.03535 14.5483 2.02569 13.9406 2.97101C13.3554 3.89382 12.7139 4.76037 12.0161 5.57064C11.3409 6.38092 10.6432 7.13492 9.92294 7.83266C9.417 8.30152 8.29005 9.33605 7.82972 9.7233C7.1545 10.3085 6.50177 10.8149 5.87156 11.2426Z" fill="#C97A5A"/>
+<path d="M4.65908 24V14.4793V8.73983V0.366986H1.91202e-06V24H4.65908Z" fill="#C97A5A"/>
+</g></g>
+    <g transform="translate(35.14 0)"><g>
+<path d="M16.849 24C16.2352 24 15.6317 23.9079 15.0383 23.7238C14.445 23.5396 13.8209 23.2532 13.1662 22.8645C12.5319 22.4757 11.8567 21.954 11.1406 21.2992L4.23528 15.0384V23.6931H0V2.20973H4.23528V9.82098L12.1841 16.9105C12.8184 17.4629 13.3708 17.913 13.8414 18.2609C14.312 18.6087 14.7314 18.8849 15.0997 19.0895C15.4884 19.2941 15.8363 19.4373 16.1432 19.5192C16.4705 19.5806 16.7877 19.6113 17.0946 19.6113C17.1559 19.6113 17.2276 19.6113 17.3094 19.6113C17.4117 19.6113 17.5038 19.6113 17.5856 19.6113V23.9386C17.4424 23.9591 17.3094 23.9693 17.1866 23.9693C17.0639 23.9898 16.9513 24 16.849 24ZM7.97951 14.6394L5.24806 12.2455C5.82095 11.8568 6.4143 11.3964 7.02811 10.8645C7.66238 10.3325 8.29665 9.7596 8.93091 9.14579C9.58564 8.51152 10.2199 7.8261 10.8337 7.08953C11.468 6.35295 12.0511 5.56523 12.5831 4.72635C13.1355 3.86702 13.6265 2.96676 14.0562 2.02559L17.3094 3.65219C16.8388 4.85935 16.2659 5.9949 15.5907 7.05883C14.936 8.12277 14.1994 9.1151 13.381 10.0358C12.5626 10.9361 11.6931 11.7749 10.7723 12.5524C9.85163 13.3299 8.92068 14.0256 7.97951 14.6394Z" fill="currentColor"/>
+<g>
+<path d="M106.662 22.803C106.212 23.1713 105.66 23.4475 105.005 23.6317C104.371 23.8158 103.695 23.9079 102.979 23.9079C101.179 23.9079 99.7876 23.4373 98.8055 22.4961C97.8234 21.555 97.3324 20.1841 97.3324 18.3836V10.4962H94.6316V7.4271H97.3324V3.68286H101.169V7.4271H105.557V10.4962H101.169V18.2915C101.169 19.0895 101.363 19.7033 101.752 20.133C102.141 20.5422 102.703 20.7468 103.44 20.7468C104.299 20.7468 105.015 20.5217 105.588 20.0716L106.662 22.803Z" fill="currentColor"/>
+<path d="M90.493 23.693L86.2884 18.0153L82.0531 23.693H77.8178L84.2014 15.3759L78.094 7.30431H82.36L86.3804 12.6751L90.4009 7.30431H94.5441L88.406 15.3145L94.8203 23.693H90.493Z" fill="currentColor"/>
+<path d="M78.9978 15.5907C78.9978 15.8567 78.9774 16.2352 78.9364 16.7262H66.0772C66.3022 17.9334 66.8853 18.895 67.8265 19.6111C68.7881 20.3068 69.9748 20.6546 71.3866 20.6546C73.1871 20.6546 74.6705 20.0613 75.8367 18.8746L77.893 21.2377C77.1564 22.1175 76.2255 22.7825 75.1001 23.2326C73.9748 23.6827 72.7063 23.9078 71.2945 23.9078C69.494 23.9078 67.9083 23.5497 66.5375 22.8336C65.1667 22.1175 64.1027 21.1252 63.3457 19.8567C62.6091 18.5677 62.2408 17.115 62.2408 15.4986C62.2408 13.9027 62.5989 12.4705 63.315 11.2019C64.0516 9.91293 65.0644 8.91037 66.3534 8.19426C67.6424 7.47814 69.095 7.12009 70.7114 7.12009C72.3073 7.12009 73.7293 7.47814 74.9774 8.19426C76.2459 8.88991 77.228 9.88223 77.9237 11.1712C78.6398 12.4398 78.9978 13.9129 78.9978 15.5907ZM70.7114 10.1891C69.4838 10.1891 68.4403 10.5574 67.581 11.294C66.7421 12.0101 66.2306 12.9717 66.0465 14.1789H75.3457C75.182 12.9922 74.6807 12.0306 73.8418 11.294C73.003 10.5574 71.9595 10.1891 70.7114 10.1891Z" fill="currentColor"/>
+<path d="M53.5722 7.12009C55.6387 7.12009 57.296 7.72367 58.5441 8.93083C59.7922 10.138 60.4162 11.9283 60.4162 14.3017V23.693H56.5799V14.7927C56.5799 13.3605 56.2423 12.2863 55.5671 11.5702C54.8919 10.8336 53.9303 10.4654 52.6822 10.4654C51.2704 10.4654 50.1554 10.895 49.3369 11.7544C48.5185 12.5932 48.1093 13.8106 48.1093 15.4065V23.693H44.273V7.30423H47.9252V9.42188C48.5595 8.66484 49.3574 8.09195 50.319 7.70321C51.2807 7.31446 52.3651 7.12009 53.5722 7.12009Z" fill="currentColor"/>
+<path d="M37.243 7.30434H41.0793V23.6931H37.243V7.30434ZM39.1765 4.60358C38.4809 4.60358 37.8977 4.38874 37.4271 3.95908C36.9566 3.50895 36.7213 2.95652 36.7213 2.30179C36.7213 1.64706 36.9566 1.10486 37.4271 0.67519C37.8977 0.225064 38.4809 0 39.1765 0C39.8722 0 40.4553 0.214833 40.9259 0.6445C41.3964 1.05371 41.6317 1.57545 41.6317 2.20972C41.6317 2.88491 41.3964 3.4578 40.9259 3.92839C40.4757 4.37851 39.8926 4.60358 39.1765 4.60358Z" fill="currentColor"/>
+<path d="M35.3994 15.5907C35.3994 15.8567 35.3789 16.2352 35.338 16.7262H22.4787C22.7038 17.9334 23.2869 18.895 24.2281 19.6111C25.1897 20.3068 26.3764 20.6546 27.7882 20.6546C29.5887 20.6546 31.0721 20.0613 32.2383 18.8746L34.2946 21.2377C33.558 22.1175 32.627 22.7825 31.5017 23.2326C30.3764 23.6827 29.1079 23.9078 27.6961 23.9078C25.8956 23.9078 24.3099 23.5497 22.9391 22.8336C21.5683 22.1175 20.5043 21.1252 19.7473 19.8567C19.0107 18.5677 18.6424 17.115 18.6424 15.4986C18.6424 13.9027 19.0005 12.4705 19.7166 11.2019C20.4532 9.91293 21.466 8.91037 22.755 8.19426C24.0439 7.47814 25.4966 7.12009 27.113 7.12009C28.7089 7.12009 30.1309 7.47814 31.379 8.19426C32.6475 8.88991 33.6296 9.88223 34.3252 11.1712C35.0414 12.4398 35.3994 13.9129 35.3994 15.5907ZM27.113 10.1891C25.8854 10.1891 24.8419 10.5574 23.9826 11.294C23.1437 12.0101 22.6322 12.9717 22.448 14.1789H31.7472C31.5836 12.9922 31.0823 12.0306 30.2434 11.294C29.4045 10.5574 28.3611 10.1891 27.113 10.1891Z" fill="currentColor"/>
+</g>
+</g></g>
+  </symbol>
+</svg>
+
+<header class="barra" id="barra">
+  <div class="wrap"><a href="#" aria-label="Keinext, inicio"><svg class="logotipo" viewBox="0 0 141.8 24" aria-hidden="true"><use href="#logotipo"/></svg></a><a class="btn btn-sm" href="#unirse" tabindex="-1">Probar Keinext</a></div>
+</header>
+
+<main>
+  <!-- 1 · HERO -->
+  <section class="hero" aria-labelledby="t-hero">
+    <div class="wrap">
+      <a class="logo" href="#" aria-label="Keinext, inicio"><svg class="logotipo" viewBox="0 0 141.8 24" aria-hidden="true"><use href="#logotipo"/></svg></a>
+      <div class="hero-grid">
+        <div class="hero-texto">
+          <h1 id="t-hero"><span class="u entra l1">Del</span> <span class="u cita">¿cuándo podéis?</span> <span class="u entra l3">al <span class="fin">plan cerrado.</span></span></h1>
+          <p class="sub entra">La app para decidir y organizar planes en grupo. Sin perseguir a nadie.</p>
+          <div class="cta entra">
+            <a class="btn" href="#unirse">Probar Keinext <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <small>Gratis. Te avisamos en cuanto puedas usarla.</small>
+          </div>
+        </div>
+        <div class="escena" id="escena">
+          <img class="ilu ilu-1" src="assets/confeti.png" alt="">
+          <div class="flota f1" aria-hidden="true"><b>Fechas del cumple</b>6 de 8 han votado<div class="barra-voto"><i></i></div></div>
+          <div class="movil"><div class="pantalla"><img src="assets/capturas/inicio-vota.png" alt="Inicio de Keinext con la votación «¿Qué fechas elegimos?» del Cumple de Marta abierta" width="786" height="1704"></div></div>
+          <div class="flota f2" aria-hidden="true"><span class="mini-av"><i>L</i><i>M</i><i>D</i><i class="mas">+9</i></span><span><b>12 personas</b>en el plan</span></div>
+          <img class="ilu ilu-2" src="assets/avion.png" alt="">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1b · PROBLEMA: el chat de grupo de hoy -->
+  <section class="problema" aria-labelledby="t-problema">
+    <div class="wrap problema-grid">
+      <div>
+        <p class="eti">Así se organiza hoy</p>
+        <h2 id="t-problema">300 mensajes después, <span class="cita">seguís sin fecha.</span></h2>
+        <ul class="dolores">
+          <li>Las encuestas se pierden entre memes y audios.</li>
+          <li>El PDF del alojamiento está en algún sitio. Nadie sabe dónde.</li>
+          <li>Siempre hay alguien que se entera tarde.</li>
+          <li>Y quien organiza se pasa la semana persiguiendo respuestas.</li>
+        </ul>
+        <p class="cifra"><strong>74&nbsp;%</strong><span>organiza sus planes en <span class="cita">el grupo de WhatsApp.</span> Ahí empieza el lío.</span></p>
+        <p class="fuente">Encuesta propia, junio de 2026.</p>
+      </div>
+      <figure class="movil chat-movil" aria-label="Ejemplo ficticio de un chat de grupo organizando una despedida">
+        <div class="pantalla"><div class="chat-pantalla">
+          <div class="chat-cab"><span class="av" aria-hidden="true">👰</span><div><b>Despedida Laura</b><span>16 personas</span></div></div>
+          <div class="chat-hilo">
+            <p class="sinleer">247 mensajes sin leer</p>
+            <p class="msg"><i>Dani</i>¿Al final quién puede el 14?</p>
+            <div class="encuesta"><b>¿Cádiz o Lisboa? (encuesta 4)</b><div class="op"><span>Cádiz</span><span>3</span></div><div class="op"><span>Lisboa</span><span>2</span></div><span class="fuente">5 de 16 han votado</span></div>
+            <p class="msg"><i>Ana</i>¿Alguien tiene el PDF del alojamiento?</p>
+            <p class="msg"><i>Marta</i>Me he enterado ahora 🙃</p>
+            <p class="msg yo">¿Votáis porfa? 🙏🙏</p>
+          </div>
+        </div></div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 2 · PANTALLA DE COLOR: ocupa justo la pantalla y la palabra cambia con el scroll (Structured).
+       Al depender del scroll y no de un temporizador, no hace falta botón de pausa (WCAG 2.2.2). -->
+  <section class="color" aria-labelledby="t-color">
+    <div class="color-fija">
+      <div class="wrap">
+        <h2 id="t-color">Decidid<span class="rota" aria-hidden="true"><span id="palabra">las fechas.</span></span><span class="sr">las fechas, el destino, el día a día y la maleta.</span></h2>
+        <p>En un sitio, con fecha de cierre y sin 300 mensajes por medio.</p>
+        <div class="puntos" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · FASES: la sección mide 4 pantallas; dentro, una pantalla fija con el móvil y el texto.
+       Cada cuarto de scroll cambia a la vez el texto, la pantalla del móvil y el stepper (móvil y escritorio).
+       Con «reducir movimiento», lista estática: cada fase con su pantalla. -->
+  <section class="fases" aria-labelledby="t-fases">
+    <div class="wrap fases-cab"><p class="eti">Así funciona</p><h2 id="t-fases">Del grupo al plan, <span class="cita">en cuatro fases.</span></h2></div>
+    <div class="fases-scroll">
+      <div class="fases-fija">
+        <div class="wrap raiz">
+          <div class="lado-movil" aria-hidden="true">
+            <div class="movil"><div class="pantalla">
+              <img class="capa on" src="assets/capturas/invitar.png" alt="">
+              <img class="capa" src="assets/capturas/sorteo.png" alt="">
+              <img class="capa" src="assets/capturas/semana.png" alt="">
+              <img class="capa" src="assets/capturas/maleta.png" alt="">
+            </div></div>
+            <div class="progreso"><i class="hecho"></i><i></i><i></i><i></i></div>
+          </div>
+          <div class="pasos">
+            <article class="paso on" data-paso="0"><div class="movil paso-movil"><div class="pantalla"><img src="assets/capturas/invitar.png" alt="" loading="lazy"></div></div><div class="tarj"><p class="eti">01 · Invitar</p><h3>Crea el plan e invita a tu grupo.</h3><p>Ponle nombre y comparte el enlace por WhatsApp. Tu grupo entra con un toque, y quien solo quiere mirar no necesita cuenta.</p></div></article>
+            <article class="paso" data-paso="1"><div class="movil paso-movil"><div class="pantalla"><img src="assets/capturas/sorteo.png" alt="" loading="lazy"></div></div><div class="tarj"><p class="eti">02 · Decidir</p><h3>Abre la votación de fechas y destino.</h3><p>Tu grupo vota con un toque antes de la fecha de cierre. ¿Empate? Rondas de desempate y, si nadie cede, <span class="cita">sorteo</span>&nbsp;🎲.</p></div></article>
+            <article class="paso" data-paso="2"><div class="movil paso-movil"><div class="pantalla"><img src="assets/capturas/semana.png" alt="" loading="lazy"></div></div><div class="tarj"><p class="eti">03 · Organizar</p><h3>Monta el día a día.</h3><p>Actividades, reservas y PDF en su día. Tu grupo también aporta, y tú puedes deshacer cualquier cambio.</p></div></article>
+            <article class="paso" data-paso="3"><div class="movil paso-movil"><div class="pantalla"><img src="assets/capturas/maleta.png" alt="" loading="lazy"></div></div><div class="tarj"><p class="eti">04 · Preparar</p><h3>Prepara tu maleta.</h3><p>Elige un look para cada plan y llévate solo lo que vas a usar. Compártela y mira qué lleva el resto.</p></div></article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · MOSAICO -->
+  <section class="mosaico" aria-labelledby="t-mosaico">
+    <div class="wrap">
+      <p class="eti">Por qué Keinext</p>
+      <h2 id="t-mosaico">Hecho para planes de grupo <span class="cita">de verdad.</span></h2>
+      <div class="bento">
+        <article class="tile t-osc t-1 anima">
+          <div><h3>Se decide, <span class="cita">no se debate.</span></h3><p>Cada votación tiene fecha de cierre. Si hay empate, rondas; si nadie cede, sorteo. Y queda decidido a la vista de todo el grupo.</p></div>
+          <div class="recorte r-sorteo"><img src="assets/capturas/sorteo.png" alt="Votación de fechas decidida por sorteo entre las dos opciones empatadas"></div>
+        </article>
+        <article class="tile t-ros t-2 anima">
+          <div><h3>Tú tienes la última palabra.</h3><p>El grupo propone y cambia cosas. Tú lo ves al momento.</p></div>
+          <div class="aviso" aria-hidden="true"><span class="av">P</span><p>Pedro ha cambiado la cena del sábado a las 22:00.</p><b>Deshacer</b></div>
+        </article>
+        <article class="tile t-bla t-3 anima">
+          <div><h3>Nadie se queda fuera.</h3><p>Con el enlace, cualquiera ve el plan sin crear cuenta.</p></div>
+          <div class="enlace" aria-hidden="true"><img src="assets/portada-laura.jpg" alt="" width="84" height="84"><div><b>Despedida de Laura</b>Mallorca · 26 jul – 8 ago<br>keinext.app</div></div>
+        </article>
+        <article class="tile t-are t-4 anima">
+          <img class="ilu3d" src="assets/mochila.png" alt="">
+          <div><h3>Tus planes, <span class="cita">estés donde estés.</span></h3><p>Con wifi o sin cobertura, el plan, las reservas y los PDF siempre están a mano.</p></div>
+          <div style="display:grid;gap:10px;width:100%;max-width:360px" aria-hidden="true">
+            <div class="offline">Sin conexión · Ves el plan tal y como estaba a las 9:40</div>
+            <div class="filas"><div><b>Sáb 26</b>Vuelo PMI · 10:40<span class="pdf">PDF</span></div><div><b>Sáb 26</b>Check-in Villa Sa Rota · 16:00</div></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · PLANES -->
+  <section class="planes" aria-labelledby="t-planes">
+    <div class="wrap"><p class="eti">Para cualquier plan</p><h2 id="t-planes" class="sec-h2">¿Qué plan tenéis <span class="cita">entre manos?</span></h2><p class="lead">Un viaje largo, una despedida, un finde rural o el cumple de siempre. De 2 a 30 personas.</p></div>
+    <ul class="carrusel" aria-label="Ejemplos ficticios de planes en Keinext">
+          <li class="pcard"><div class="pcover foto"><img src="assets/portada-mallorca.jpg" alt=""><span class="ptag ">Organizando</span></div><div class="pbody"><b>Despedida de Laura</b><span>Mallorca · 26 jul – 8 ago</span><span class="pav" aria-label="16 personas"><i>L</i><i>M</i><i>D</i><em>+13</em></span></div></li>
+          <li class="pcard"><div class="pcover"><img src="assets/confeti.png" alt="" width="104" height="104"><span class="ptag vot">Votando</span></div><div class="pbody"><b>Cumple de Marta</b><span>Casa rural · fechas en votación</span><span class="pav" aria-label="12 personas"><i>L</i><i>M</i><i>D</i><em>+9</em></span></div></li>
+          <li class="pcard"><div class="pcover foto"><img src="assets/portada-somo.jpg" alt=""><span class="ptag ">Organizando</span></div><div class="pbody"><b>Escapada a Somo</b><span>Cantabria · 14 – 16 ago</span><span class="pav" aria-label="6 personas"><i>L</i><i>M</i><i>D</i><em>+3</em></span></div></li>
+          <li class="pcard"><div class="pcover"><img src="assets/festival.png" alt="" width="104" height="104"><span class="ptag ">Empezando</span></div><div class="pbody"><b>Festival con la peña</b><span>¿Bilbao o Benicàssim?</span><span class="pav" aria-label="9 personas"><i>L</i><i>M</i><i>D</i><em>+6</em></span></div></li>
+          <li class="pcard"><div class="pcover foto"><img src="assets/portada-leon.jpg" alt=""><span class="ptag ">Empezando</span></div><div class="pbody"><b>Fin de año</b><span>León · 30 dic – 2 ene</span><span class="pav" aria-label="14 personas"><i>L</i><i>M</i><i>D</i><em>+11</em></span></div></li>
+    </ul>
+    <p class="wrap nota">¿Despedida sorpresa? Fácil: no invitas a quien se casa 🤫</p>
+  </section>
+
+  <!-- 6 · ROLES -->
+  <section class="roles-sec" aria-labelledby="t-roles">
+    <div class="wrap">
+      <h2 id="t-roles" class="sec-h2">Para quien lo organiza todo. <span class="cita">Y para quien solo se apunta.</span></h2>
+      <div class="roles">
+        <article class="rol"><p class="eti">Si organizas</p><h3>Deja de perseguir respuestas.</h3><ul><li>Abres la votación y pones fecha de cierre.</li><li>Keinext avisa al grupo por ti.</li><li>Ves cada cambio y lo deshaces si hace falta.</li></ul></article>
+        <article class="rol"><p class="eti">Si te apuntas</p><h3>Todo el plan, en un sitio.</h3><ul><li>Votas desde Inicio con un toque.</li><li>Horarios, reservas y PDF, a mano y sin cobertura.</li><li>¿Solo quieres mirar? Con el enlace, sin cuenta.</li></ul></article>
+      </div>
+      <p class="cta-centro"><a class="btn" href="#unirse">Probar Keinext</a></p>
+    </div>
+  </section>
+
+  <!-- 7 · PRUEBA SOCIAL: tres pisos con aire (título, cifras, una cita protagonista y dos secundarias) -->
+  <section class="social" aria-labelledby="t-social">
+    <div class="wrap">
+      <p class="eti">Lo que nos contaron</p>
+      <h2 id="t-social" class="sec-h2">Lo estamos construyendo <span class="cita">con vosotros.</span></h2>
+      <div class="nums">
+        <div class="num"><strong>86&nbsp;%</strong><span>quiere una app así</span></div>
+        <div class="num"><strong>1 de 3</strong><span>habla, sin preguntarle, del lío de poner de acuerdo al grupo</span></div>
+      </div>
+      <figure class="cita-grande">
+        <svg class="comilla c-abre" viewBox="0 0 72 52" aria-hidden="true"><path d="M6 36a14 14 0 1 0 14-14c-1.6 0-3.1.3-4.5.8C17.4 14.6 23 8.8 31 5.6L29 0C14.6 4.4 6 17.4 6 34v2z"/><path transform="translate(36 0)" d="M6 36a14 14 0 1 0 14-14c-1.6 0-3.1.3-4.5.8C17.4 14.6 23 8.8 31 5.6L29 0C14.6 4.4 6 17.4 6 34v2z"/></svg>
+        <blockquote><p>Resulta difícil poner a todo el mundo de acuerdo y tiene que haber alguien que tire del grupo.</p></blockquote>
+        <svg class="comilla c-cierra" viewBox="0 0 72 52" aria-hidden="true"><g transform="rotate(180 36 26)"><path d="M6 36a14 14 0 1 0 14-14c-1.6 0-3.1.3-4.5.8C17.4 14.6 23 8.8 31 5.6L29 0C14.6 4.4 6 17.4 6 34v2z"/><path transform="translate(36 0)" d="M6 36a14 14 0 1 0 14-14c-1.6 0-3.1.3-4.5.8C17.4 14.6 23 8.8 31 5.6L29 0C14.6 4.4 6 17.4 6 34v2z"/></g></svg>
+        <span class="flota f-quien" aria-hidden="true"><span class="mini-av"><i>A</i><i>J</i><i>P</i></span><span><b>Respuestas reales</b>de nuestra encuesta</span></span>
+      </figure>
+      <div class="citas-peq">
+        <blockquote class="burbuja"><p>“El WhatsApp se queda muy corto.”</p></blockquote>
+        <blockquote class="burbuja b-der"><p>“Planes en los que implica movilizar a mucha gente y acaba siendo un caos organizarlo.”</p></blockquote>
+      </div>
+      <p class="fuente">Encuesta propia, junio de 2026. Citas anónimas.</p>
+    </div>
+  </section>
+
+  <!-- 8 · PREGUNTAS FRECUENTES -->
+  <section class="faq" aria-labelledby="t-faq">
+    <div class="wrap faq-grid">
+      <div><p class="eti">Preguntas frecuentes</p><h2 id="t-faq" class="sec-h2">Lo que queréis saber <span class="cita">antes de apuntaros.</span></h2></div>
+      <div class="faq-lista">
+        <details><summary>¿Cuánto cuesta?</summary><p>Ahora mismo, nada: es gratis.</p></details>
+        <details><summary>¿Todo el grupo se tiene que bajar la app?</summary><p>No. Con el enlace pueden ver el plan sin cuenta. Para votar o proponer, sí necesitan la app.</p></details>
+        <details><summary>¿Tiene chat?</summary><p>No, a propósito. La charla sigue en vuestro grupo; Keinext es donde queda lo decidido.</p></details>
+        <details><summary>¿Y los gastos del viaje?</summary><p>Ya puedes apuntar el precio de cada reserva y actividad, y si se paga a partes iguales o cada quien lo suyo. Repartir las cuentas y ver quién debe a quién llegará más adelante.</p></details>
+        <details><summary>¿Para iPhone o Android?</summary><p>Para los dos, desde el primer día.</p></details>
+        <details><summary>¿Qué hacéis con mis datos?</summary><p>Lo mínimo para que funcione, en servidores de la UE. No vendemos datos ni ponemos anuncios. <a href="/privacidad">Política de privacidad</a>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · MARCAS E INVERSORES -->
+  <section class="marcas" aria-labelledby="t-marcas">
+    <div class="wrap marcas-grid">
+      <div>
+      <p class="eti">Marcas e inversores</p>
+      <h2 id="t-marcas" class="sec-h2">¿Hacemos planes <span class="cita">juntos?</span></h2>
+      <p>Keinext quiere ser el sitio donde cada grupo decide sus viajes, despedidas y escapadas, tenga la edad que tenga. Si tienes una marca, un alojamiento o un plan que encaje, o quieres saber más del proyecto, escríbenos.</p>
+      <ul class="encaje" aria-label="Con quién encaja">
+        <li>Alojamientos</li><li>Experiencias y planes</li><li>Destinos</li><li>Inversión</li>
+      </ul>
+      <p style="margin-top:28px"><a class="btn btn-borde" href="mailto:hola@keinext.com">hola@keinext.com</a></p>
+      </div>
+      <!-- Collage de portadas de planes (las mismas fotos de los diseños de Figma): el «sitio» donde una marca puede aparecer -->
+      <div class="collage" aria-hidden="true">
+        <img class="c1" src="assets/portada-mallorca.jpg" alt="">
+        <img class="c2" src="assets/portada-somo.jpg" alt="">
+        <img class="c3" src="assets/portada-leon.jpg" alt="">
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · FORMULARIO (datos mínimos, RGPD): guarda en Supabase con join_waitlist -->
+  <section class="final" id="unirse" aria-labelledby="t-final">
+    <div class="wrap final-grid">
+      <div>
+      <h2 id="t-final" class="sec-h2">¿Te apuntas al <span class="cita">próximo plan?</span></h2>
+      <p class="sub-final">Apúntate, pruébala antes que nadie y ayúdanos a dejar el <span class="cita">¿cuándo podéis?</span> en el pasado.</p>
+      <ul class="garantias">
+        <li>Gratis, sin tarjeta.</li>
+        <li>Solo te escribimos para avisarte.</li>
+        <li>Te das de baja cuando quieras.</li>
+      </ul>
+      </div>
+      <div class="final-form">
+      <form id="form-beta" class="form-beta" novalidate>
+        <div class="campo"><label for="beta-email">Tu email</label><input id="beta-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="nombre@ejemplo.com" required aria-describedby="beta-email-error"><p id="beta-email-error" class="error" hidden>Escribe un email válido, por ejemplo nombre@ejemplo.com.</p></div>
+        <fieldset class="campo"><legend>¿Qué móvil tienes?</legend><div class="plataformas"><label class="opcion"><input type="radio" name="plataforma" id="beta-ios" value="ios" required> iPhone</label><label class="opcion"><input type="radio" name="plataforma" id="beta-android" value="android"> Android</label></div><p id="beta-plataforma-error" class="error" hidden>Elige tu móvil para enviarte la versión que toca.</p></fieldset>
+        <div class="campo"><div class="casilla"><input id="beta-consentimiento" name="consentimiento" type="checkbox" required aria-describedby="beta-consentimiento-error"><label for="beta-consentimiento">Acepto que Keinext guarde mi email para avisarme cuando pueda probarla, como explica la <a href="/privacidad">Política de privacidad</a>. Puedo darme de baja cuando quiera.</label></div><p id="beta-consentimiento-error" class="error" hidden>Para apuntarte necesitamos tu permiso.</p></div>
+        <div class="trampa" aria-hidden="true"><label for="beta-web">Web</label><input id="beta-web" name="web" type="text" tabindex="-1" autocomplete="off"></div>
+        <p id="beta-envio-error" class="error" role="alert" hidden></p>
+        <button class="btn" type="submit">Apuntarme gratis</button>
+      </form>
+      <div id="beta-ok" class="beta-ok" role="status" tabindex="-1" hidden><p class="beta-ok-t">¡Estás dentro! 🎉</p><p>Te escribiremos en cuanto puedas probar Keinext. Mientras, pásale la web a quien organiza en tu grupo.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="pie">
+  <div class="wrap">
+    <div class="pie-arriba">
+      <div class="pie-marca"><a href="#" aria-label="Keinext, inicio"><svg class="logotipo" viewBox="0 0 141.8 24" aria-hidden="true"><use href="#logotipo"/></svg></a><p>Del <span class="cita">¿cuándo podéis?</span> al plan cerrado.</p></div>
+      <nav class="pie-cols" aria-label="Pie de página">
+        <div><p class="pie-t">Síguenos</p><a href="#" data-pendiente="usuario de Instagram">Instagram</a><a href="#" data-pendiente="usuario de TikTok">TikTok</a></div>
+        <div><p class="pie-t">Keinext</p><a href="mailto:hola@keinext.com">Contacto</a><a href="/privacidad">Privacidad</a><a href="/condiciones">Condiciones</a></div>
+      </nav>
+    </div>
+    <p class="pie-abajo"><small>© 2026 Keinext · Hecho en España con muchos planes pendientes.</small></p>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add('js');
+const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Hero: al bajar, el móvil se endereza y crece un poco; las tarjetas flotantes se separan (Revolut) */
+(() => {
+  const escena = document.getElementById('escena');
+  if (!escena || quieto) return;
+  const movil = escena.querySelector('.movil'), f1 = escena.querySelector('.f1'), f2 = escena.querySelector('.f2');
+  let pendiente = false;
+  const pintar = () => {
+    pendiente = false;
+    const p = Math.min(Math.max(scrollY / 600, 0), 1);
+    movil.style.transform = `rotate(${(1 - p) * -4}deg) scale(${0.94 + p * 0.08})`;
+    f1.style.transform = `translate(${-p * 24}px, ${-p * 30}px)`;
+    f2.style.transform = `translate(${p * 24}px, ${p * 20}px)`;
+  };
+  addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); } }, { passive: true });
+  pintar();
+})();
+
+/* Pantalla de color: la sección mide 4 pantallas; cada cuarto de scroll cambia la palabra */
+(() => {
+  const sec = document.querySelector('.color'), el = document.getElementById('palabra');
+  const puntos = [...sec.querySelectorAll('.puntos i')];
+  const palabras = ['las fechas.', 'el destino.', 'el día a día.', 'la maleta.'];
+  if (quieto) { el.textContent = 'fechas, destino, día a día y maleta.'; return; }
+  let actual = 0, pendiente = false;
+  const pintar = () => {
+    pendiente = false;
+    const r = sec.getBoundingClientRect();
+    const p = Math.min(Math.max(-r.top / (r.height - innerHeight), 0), 0.999);
+    const i = Math.floor(p * palabras.length);
+    if (i !== actual) {
+      actual = i; el.textContent = palabras[i];
+      el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
+      puntos.forEach((d, k) => d.classList.toggle('on', k === i));
+    }
+  };
+  addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); } }, { passive: true });
+})();
+
+/* Fases: el progreso del scroll por la sección decide la fase (0-3) y cambia todo a la vez */
+(() => {
+  const sec = document.querySelector('.fases-scroll');
+  if (!sec || quieto) return;
+  const pasos = [...sec.querySelectorAll('.paso')], capas = [...sec.querySelectorAll('.capa')], barras = [...sec.querySelectorAll('.progreso i')];
+  let actual = 0, pendiente = false;
+  const pintar = () => {
+    pendiente = false;
+    const r = sec.getBoundingClientRect();
+    const p = Math.min(Math.max(-r.top / (r.height - innerHeight), 0), 0.999);
+    const n = Math.floor(p * pasos.length);
+    if (n === actual) return;
+    actual = n;
+    pasos.forEach((el, k) => el.classList.toggle('on', k === n));
+    capas.forEach((el, k) => el.classList.toggle('on', k === n));
+    barras.forEach((el, k) => el.classList.toggle('hecho', k <= n));
+  };
+  addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); } }, { passive: true });
+})();
+
+/* Mosaico: cada pieza entra una vez al aparecer */
+(() => {
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .25 });
+  document.querySelectorAll('.anima').forEach(el => io.observe(el));
+})();
+/* Barra compacta: entra (300 ms) cuando el CTA del hero queda atrás y no se ve ningún otro CTA */
+(() => {
+  const barra = document.getElementById('barra'), cta = barra.querySelector('.btn');
+  const ctas = [...document.querySelectorAll('main .btn, main form button')];
+  const visibles = new Set(); let pasado = false;
+  const pintar = () => { const v = pasado && visibles.size === 0; barra.classList.toggle('visible', v); barra.setAttribute('aria-hidden', String(!v)); cta.tabIndex = v ? 0 : -1; };
+  const io = new IntersectionObserver(es => { es.forEach(e => e.isIntersecting ? visibles.add(e.target) : visibles.delete(e.target)); pintar(); });
+  ctas.forEach(c => io.observe(c));
+  new IntersectionObserver(([e]) => { pasado = !e.isIntersecting && e.boundingClientRect.top < 0; pintar(); }).observe(document.querySelector('.hero .cta'));
+  pintar();
+})();
+
+/* Chat del problema: los mensajes entran uno a uno al aparecer */
+(() => {
+  const h = document.querySelector('.chat-hilo'); if (!h) return;
+  new IntersectionObserver(([e], o) => { if (e.isIntersecting) { h.classList.add('in'); o.disconnect(); } }, { threshold: .3 }).observe(h);
+})();
+
+/* Carrusel de planes: la tarjeta del centro al 100 %, las demás bajan al 90 % y se atenúan */
+(() => {
+  const c = document.querySelector('.carrusel'); if (!c || quieto) return;
+  const cards = [...c.children]; let pendiente = false;
+  const pintar = () => { pendiente = false; const centro = c.getBoundingClientRect().left + c.clientWidth / 2;
+    cards.forEach(k => { const r = k.getBoundingClientRect(); const d = Math.min(Math.abs(r.left + r.width / 2 - centro) / r.width, 1);
+      k.style.setProperty('--z', (1 - .1 * d).toFixed(3)); k.style.setProperty('--o', (1 - .35 * d).toFixed(3)); }); };
+  c.addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); } }, { passive: true });
+  addEventListener('resize', pintar); pintar();
+})();
+
+/* Formulario: valida en el navegador, enseña el error junto a su campo y guarda en Supabase (producción)
+   con la función public.join_waitlist (supabase/migrations/20261110175550_lista_de_espera.sql).
+   La clave es la pública (publishable/anon): puede ir en la web; la tabla no se puede leer desde fuera. */
+(() => {
+  const SUPABASE_URL = 'https://lnzmduzlbefkaezpubre.supabase.co';
+  const SUPABASE_CLAVE_PUBLICA = 'PENDIENTE_CLAVE_PUBLICA_DE_PRODUCCION';
+  const f = document.getElementById('form-beta'); if (!f) return;
+  const email = f.elements.email, err = id => document.getElementById(id), boton = f.querySelector('button[type=submit]');
+  const origen = new URLSearchParams(location.search).get('utm_source') || (document.referrer ? new URL(document.referrer).hostname : '');
+  const fallo = texto => { const e = err('beta-envio-error'); e.textContent = texto; e.hidden = false; };
+  f.addEventListener('submit', async ev => {
+    ev.preventDefault();
+    err('beta-envio-error').hidden = true;
+    const okE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()), plat = f.querySelector('input[name=plataforma]:checked'), okC = f.elements.consentimiento.checked;
+    email.setAttribute('aria-invalid', String(!okE));
+    err('beta-email-error').hidden = okE; err('beta-plataforma-error').hidden = !!plat; err('beta-consentimiento-error').hidden = okC;
+    if (!okE) return email.focus(); if (!plat) return f.querySelector('input[name=plataforma]').focus(); if (!okC) return f.elements.consentimiento.focus();
+    if (f.elements.web.value) return; // trampa para bots: una persona no rellena este campo
+    boton.disabled = true; boton.textContent = 'Apuntándote…';
+    try {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/join_waitlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_CLAVE_PUBLICA, Authorization: `Bearer ${SUPABASE_CLAVE_PUBLICA}` },
+        body: JSON.stringify({ p_email: email.value.trim(), p_platform: plat.value, p_consent: true, p_source: origen.slice(0, 100) || null })
+      });
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        throw new Error(d.code === '54000' ? 'Hay mucha gente apuntándose ahora mismo. Prueba en un minuto.' : 'No hemos podido apuntarte. Revisa el email y vuelve a probar.');
+      }
+      f.hidden = true; const ok = document.getElementById('beta-ok'); ok.hidden = false; ok.focus?.();
+    } catch (e) {
+      fallo(e instanceof TypeError ? 'No hemos podido apuntarte. Revisa tu conexión y vuelve a probar.' : e.message);
+    } finally { boton.disabled = false; boton.textContent = 'Apuntarme gratis'; }
+  });
+})();
+</script>
+</body>
+</html>
