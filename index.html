@@ -736,7 +736,7 @@ a{color:var(--brand-dark)}
    («ve_seccion», «llega_al_formulario», «faq_abierta», «apuntarse», «apuntarse_error»), las visitas,
    hasta dónde se baja (al salir) y los clics en enlaces y botones. Mientras falte la clave, no se carga. */
 (() => {
-  const POSTHOG_CLAVE = 'PENDIENTE_CLAVE_DE_POSTHOG';
+  const POSTHOG_CLAVE = 'phc_zSgnBWQvMX5LxuQQzSDMrd33fYRT6BxwRUMsK5f3DcCD';
   const cola = [];
   window.medir = (evento, datos) => { window.posthog && posthog.__loaded ? posthog.capture(evento, datos) : cola.push([evento, datos]); };
   if (POSTHOG_CLAVE.startsWith('PENDIENTE')) { window.medir = () => {}; return; }
