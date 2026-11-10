@@ -706,6 +706,7 @@ a{color:var(--brand-dark)}
         <fieldset class="campo"><legend>¿Qué móvil tienes?</legend><div class="plataformas"><label class="opcion"><input type="radio" name="plataforma" id="beta-ios" value="ios" required> iPhone</label><label class="opcion"><input type="radio" name="plataforma" id="beta-android" value="android"> Android</label></div><p id="beta-plataforma-error" class="error" hidden>Elige tu móvil para enviarte la versión que toca.</p></fieldset>
         <div class="campo"><div class="casilla"><input id="beta-consentimiento" name="consentimiento" type="checkbox" required aria-describedby="beta-consentimiento-error"><label for="beta-consentimiento">Acepto que Keinext guarde mi email para avisarme cuando pueda probarla, como explica la <a href="/privacidad">Política de privacidad</a>. Puedo darme de baja cuando quiera.</label></div><p id="beta-consentimiento-error" class="error" hidden>Para apuntarte necesitamos tu permiso.</p></div>
         <div class="trampa" aria-hidden="true"><label for="beta-web">Web</label><input id="beta-web" name="web" type="text" tabindex="-1" autocomplete="off"></div>
+        <div class="campo"><div id="turnstile"></div><p id="beta-reto-error" class="error" hidden>Confirma que no eres un robot y vuelve a pulsar.</p></div>
         <p id="beta-envio-error" class="error" role="alert" hidden></p>
         <button class="btn" type="submit">Apuntarme gratis</button>
       </form>
@@ -824,41 +825,53 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
   addEventListener('resize', pintar); pintar();
 })();
 
-/* Formulario: valida en el navegador, enseña el error junto a su campo y guarda en Supabase (producción)
-   con la función public.join_waitlist (supabase/migrations/20261110175550_lista_de_espera.sql).
-   La clave es la pública (publishable/anon): puede ir en la web; la tabla no se puede leer desde fuera. */
+/* Formulario: valida en el navegador, enseña el error junto a su campo y lo manda a la Edge Function
+   «unirse-a-la-lista» con el token de Cloudflare Turnstile (comprueba que es una persona). La función guarda
+   en Supabase con la service_role; desde la web no se puede escribir ni leer la lista.
+   Claves públicas: la de Supabase (publishable/anon) y la del sitio de Turnstile pueden ir en la web. */
 (() => {
   const SUPABASE_URL = 'https://lnzmduzlbefkaezpubre.supabase.co';
   const SUPABASE_CLAVE_PUBLICA = 'PENDIENTE_CLAVE_PUBLICA_DE_PRODUCCION';
+  const TURNSTILE_CLAVE_SITIO = 'PENDIENTE_CLAVE_DE_SITIO_TURNSTILE';
+  const VERSION_TEXTO = 'privacidad-2026-11-10';
   const f = document.getElementById('form-beta'); if (!f) return;
   const email = f.elements.email, err = id => document.getElementById(id), boton = f.querySelector('button[type=submit]');
   const origen = new URLSearchParams(location.search).get('utm_source') || (document.referrer ? new URL(document.referrer).hostname : '');
   const fallo = texto => { const e = err('beta-envio-error'); e.textContent = texto; e.hidden = false; };
+  let widget = null;
+  window.onTurnstileListo = () => { widget = turnstile.render('#turnstile', { sitekey: TURNSTILE_CLAVE_SITIO, language: 'es', theme: 'light', size: 'flexible' }); };
   f.addEventListener('submit', async ev => {
     ev.preventDefault();
-    err('beta-envio-error').hidden = true;
+    err('beta-envio-error').hidden = true; err('beta-reto-error').hidden = true;
     const okE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()), plat = f.querySelector('input[name=plataforma]:checked'), okC = f.elements.consentimiento.checked;
     email.setAttribute('aria-invalid', String(!okE));
     err('beta-email-error').hidden = okE; err('beta-plataforma-error').hidden = !!plat; err('beta-consentimiento-error').hidden = okC;
     if (!okE) return email.focus(); if (!plat) return f.querySelector('input[name=plataforma]').focus(); if (!okC) return f.elements.consentimiento.focus();
     if (f.elements.web.value) return; // trampa para bots: una persona no rellena este campo
+    const token = widget !== null && window.turnstile ? turnstile.getResponse(widget) : '';
+    if (!token) { err('beta-reto-error').hidden = false; return; }
     boton.disabled = true; boton.textContent = 'Apuntándote…';
     try {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/join_waitlist`, {
+      const r = await fetch(`${SUPABASE_URL}/functions/v1/unirse-a-la-lista`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_CLAVE_PUBLICA, Authorization: `Bearer ${SUPABASE_CLAVE_PUBLICA}` },
-        body: JSON.stringify({ p_email: email.value.trim(), p_platform: plat.value, p_consent: true, p_source: origen.slice(0, 100) || null })
+        headers: { 'Content-Type': 'application/json', apikey: SUPABASE_CLAVE_PUBLICA },
+        body: JSON.stringify({ email: email.value.trim(), plataforma: plat.value, consentimiento: true, origen: origen.slice(0, 100), version: VERSION_TEXTO, token })
       });
       if (!r.ok) {
         const d = await r.json().catch(() => ({}));
-        throw new Error(d.code === '54000' ? 'Hay mucha gente apuntándose ahora mismo. Prueba en un minuto.' : 'No hemos podido apuntarte. Revisa el email y vuelve a probar.');
+        throw new Error(d.error === 'muchas' ? 'Hay mucha gente apuntándose ahora mismo. Prueba en un minuto.'
+          : d.error === 'reto' ? 'No hemos podido comprobar que no eres un robot. Vuelve a intentarlo.'
+          : 'No hemos podido apuntarte. Revisa el email y vuelve a probar.');
       }
-      f.hidden = true; const ok = document.getElementById('beta-ok'); ok.hidden = false; ok.focus?.();
+      f.hidden = true; const ok = document.getElementById('beta-ok'); ok.hidden = false; ok.focus();
     } catch (e) {
       fallo(e instanceof TypeError ? 'No hemos podido apuntarte. Revisa tu conexión y vuelve a probar.' : e.message);
+      if (widget !== null && window.turnstile) turnstile.reset(widget);
     } finally { boton.disabled = false; boton.textContent = 'Apuntarme gratis'; }
   });
 })();
 </script>
+<!-- Cloudflare Turnstile: comprueba que quien se apunta es una persona (sin cookies de seguimiento) -->
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileListo" async defer></script>
 </body>
 </html>
