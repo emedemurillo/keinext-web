@@ -1,0 +1,29 @@
+# Keinext
+
+> Keinext es una app móvil (iPhone y Android), en español de España, para que grupos de amigos decidan y organicen juntos viajes, despedidas y escapadas. Sustituye las encuestas de WhatsApp, los documentos compartidos y las capturas de reservas por un tablón oficial del plan.
+
+Estado: en desarrollo; la beta será para iPhone y Android. Ahora mismo es gratis. Lista de espera en https://keinext.com/#unirse
+
+## Qué hace
+- Crear un plan e invitar al grupo con un enlace (por WhatsApp, por ejemplo).
+- Votar fechas y después destino, con fecha de cierre de la votación, desempate y sorteo.
+- Votar desde la pantalla de Inicio sin entrar en el plan.
+- Montar el día a día con actividades, reservas y adjuntos; quien organiza aprueba o deshace los cambios que propone el grupo.
+- Preparar la maleta de cada persona.
+- Ver el plan por enlace sin cuenta y consultarlo sin conexión.
+
+## En qué se diferencia
+- Se centra en el «antes» del plan: ponerse de acuerdo y cerrar decisiones, por fases (decidir, organizar, preparar).
+- No tiene chat a propósito: la conversación sigue en el grupo de WhatsApp y Keinext es donde queda lo decidido.
+- Repartir gastos llegará más adelante; hoy se puede apuntar el precio de cada reserva y cómo se paga.
+
+## Para quién
+Grupos de 2 a unas 30 personas en España, sobre todo de 18 a 35 años, y en especial quien organiza el plan.
+
+## Enlaces
+- Web: https://keinext.com/
+- Privacidad: https://keinext.com/privacidad
+- Condiciones: https://keinext.com/condiciones
+- Contacto: hola@keinext.com
+- Instagram: https://www.instagram.com/keinext/
+- TikTok: https://www.tiktok.com/@keinextapp
