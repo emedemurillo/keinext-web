@@ -46,6 +46,8 @@
   --bg-main:#f9f9f9;        /* Color-Background-Main (fondo de la app) */
   --white:#ffffff;
   --error:#a3483b;          /* Color-Error-Main */
+  --success-light:#cad3c7;  /* Color-Success-Light · Green/200 */
+  --success-dark:#253024;   /* Color-Success-Dark · Green/900 */
   --text:#2b2421;           /* Color-Text-Main */
   --text-2:#605348;         /* Color-Text-Secondary */
   --text-3:#776957;         /* Color-Text-Light */
@@ -55,6 +57,7 @@
   --ease:cubic-bezier(.2,.7,.1,1);
 }
 *{box-sizing:border-box;margin:0}
+[hidden]{display:none!important} /* si no, .form-beta (grid) seguía visible al apuntarse */
 html{scroll-padding-top:80px;scroll-behavior:smooth}
 body{font-family:var(--f);color:var(--text);background:var(--sand);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 img{max-width:100%;display:block}
@@ -143,9 +146,16 @@ a{color:var(--brand-dark)}
 .color .rota span{display:inline-block}
 @media (prefers-reduced-motion:no-preference){.color .rota span{animation:palabra .5s var(--ease) both}@keyframes palabra{from{opacity:0;transform:translateY(.4em);filter:blur(6px)}}}
 .color p{margin-top:24px;font-size:1.125rem;color:var(--brand-lighter);max-width:30ch;margin-inline:auto}
-.puntos{display:flex;gap:8px;justify-content:center;margin-top:32px}
-.puntos i{width:8px;height:8px;border-radius:50%;background:rgba(248,236,232,.35);transition:background .3s,transform .3s}
-.puntos i.on{background:var(--white);transform:scale(1.25)}
+/* Test con usuarios (11/11/2026): con los puntos en horizontal se intentaba deslizar de lado. Ahora el progreso va
+   en vertical, pegado al borde derecho, y abajo un «Sigue bajando» que desaparece en la última palabra. */
+.puntos{position:absolute;top:50%;right:max(14px,env(safe-area-inset-right,0px));transform:translateY(-50%);display:flex;flex-direction:column;gap:10px}
+.puntos i{width:6px;height:20px;border-radius:3px;background:rgba(248,236,232,.3);transition:background .3s,height .3s}
+.puntos i.on{background:var(--white);height:32px}
+.sigue{position:absolute;left:0;right:0;bottom:calc(28px + env(safe-area-inset-bottom,0px));margin:0 auto!important;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.8125rem!important;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand-lighter);transition:opacity .3s}
+.sigue svg{width:22px;height:22px}
+.color.fin .sigue{opacity:0}
+@media (prefers-reduced-motion:no-preference){.sigue svg{animation:sigue 1.6s var(--ease) infinite}@keyframes sigue{50%{transform:translateY(5px)}}}
+@media (prefers-reduced-motion:reduce){.puntos,.sigue{display:none}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 /* Con «reducir movimiento», una sola pantalla con la frase completa */
 @media (prefers-reduced-motion:reduce){.color{height:auto}.color-fija{position:static;min-height:100svh}}
@@ -157,18 +167,28 @@ a{color:var(--brand-dark)}
 .fases{background:var(--white);padding-top:96px}
 .fases-cab h2{font-size:clamp(2.2rem,9vw,4.4rem);line-height:1.02;font-weight:800;letter-spacing:-.03em;margin-top:12px;text-wrap:balance}
 .fases-scroll{height:400vh;height:400svh;position:relative}
-.fases-fija{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;overflow:hidden}
+.fases-fija{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;overflow:hidden;padding-top:56px}
 .raiz{display:grid;grid-template-rows:auto auto;justify-items:center;gap:20px;width:100%}
-.lado-movil{display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:none}
-.lado-movil .movil{width:min(62vw,28svh);border-radius:32px;padding:7px}
+/* Test con usuarios (11/11/2026): la barra horizontal bajo el móvil invitaba a deslizar de lado. Ahora hay un
+   índice vertical a la izquierda del móvil (cada número lleva a su fase) y un «Siguiente» bajo el texto:
+   sirve a quien baja con el dedo y a quien prefiere pulsar. */
+.lado-movil{display:grid;grid-template-columns:44px auto 44px;align-items:center;gap:12px}
+.lado-movil .movil{pointer-events:none}
+.fases-nav{list-style:none;padding:0;display:flex;flex-direction:column;gap:2px;position:relative}
+.fases-nav::before{content:"";position:absolute;left:21px;top:22px;bottom:22px;width:2px;background:var(--line)}
+.fases-nav button{position:relative;width:44px;height:44px;display:grid;place-items:center;border:0;background:none;padding:0;cursor:pointer;font:800 .8125rem var(--f);color:var(--text-2)}
+.fases-nav span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--white);border:2px solid var(--line);transition:background .3s,border-color .3s,color .3s,transform .3s var(--ease)}
+.fases-nav .hecho span{border-color:var(--brand-lighter);background:var(--brand-lighter);color:var(--brand-dark)}
+.fases-nav [aria-current] span{background:var(--brand-dark);border-color:var(--brand-dark);color:var(--white);transform:scale(1.15)}
+.fases-nav button:hover span{border-color:var(--brand-dark)}
+.fases-sig{grid-area:2/1;justify-self:center;display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:8px;padding:0 4px;border:0;background:none;cursor:pointer;font:700 1rem var(--f);color:var(--brand-dark)}
+.fases-sig svg{width:20px;height:20px}
+@media (prefers-reduced-motion:no-preference){.fases-sig svg{animation:sigue 1.6s var(--ease) infinite}}
+.lado-movil .movil{width:min(62vw,26svh);border-radius:32px;padding:7px}
 .lado-movil .movil::after{top:13px;height:16px}
 .lado-movil .pantalla{border-radius:26px}
 .capa{opacity:0;clip-path:inset(100% 0 0 0 round 26px);transition:clip-path .6s var(--ease),opacity .25s}
 .capa.on{opacity:1;clip-path:inset(0 0 0 0 round 26px)}
-.progreso{display:flex;gap:6px;width:min(62vw,28svh)}
-.progreso i{flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden;position:relative}
-.progreso i::after{content:"";position:absolute;inset:0;background:var(--brand-dark);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
-.progreso i.hecho::after{transform:scaleX(1)}
 /* Los 4 textos ocupan la misma celda: mide lo que el más largo y nada salta al cambiar */
 .pasos{display:grid;width:100%}
 .paso{grid-area:1/1;opacity:0;transform:translateY(16px);transition:opacity .4s var(--ease),transform .4s var(--ease);pointer-events:none}
@@ -183,16 +203,16 @@ a{color:var(--brand-dark)}
   .lado-movil .movil{width:min(300px,34vh);border-radius:44px;padding:9px}
   .lado-movil .movil::after{top:18px;height:22px}
   .lado-movil .pantalla{border-radius:36px}
-  .progreso{width:min(300px,34vh)}
   .pasos{grid-column:1;grid-row:1}
   .paso .tarj{margin-inline:0;text-align:left}
   .paso p:not(.eti){font-size:1.0625rem}
+  .fases-sig{justify-self:start}
 }
 /* Sin movimiento: lista normal, cada fase con su pantalla, sin pantalla fija */
 @media (prefers-reduced-motion:reduce){
   .fases-scroll{height:auto}
   .fases-fija{position:static;height:auto;padding-block:40px}
-  .lado-movil{display:none}
+  .lado-movil,.fases-sig{display:none}
   .pasos{gap:48px}
   .paso{grid-area:auto;opacity:1;transform:none}
   .paso-movil{display:block;width:min(240px,64vw);margin-bottom:20px}
@@ -268,6 +288,7 @@ a{color:var(--brand-dark)}
 .barra .logotipo{height:22px}
 .btn-sm{min-height:44px;padding:0 18px;font-size:.9375rem}
 @media (prefers-reduced-motion:reduce){.barra,.barra.visible{transition:none}}
+.apuntado .barra .btn{display:none} /* ya se ha apuntado: la barra no vuelve a pedírselo */
 
 /* ── Problema ─────────────────────────────────────────────── */
 .problema{padding-block:96px;background:var(--white)}
@@ -425,8 +446,17 @@ a{color:var(--brand-dark)}
 .form-beta .btn{width:100%}
 .form-beta .btn[disabled]{opacity:.7;cursor:progress}
 .trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-.beta-ok{margin-top:36px;background:var(--white);color:var(--text);border-radius:28px;padding:28px;max-width:34rem}
-.beta-ok-t{font-size:1.75rem;font-weight:800}
+/* Test con usuarios (11/11/2026): en móvil el éxito quedaba fuera de la vista y parecía que no se había enviado.
+   Ahora ocupa el sitio del formulario, se centra en pantalla, lleva un check grande y repite el email. */
+.beta-ok{margin-top:36px;background:var(--white);color:var(--text);border-radius:28px;padding:32px 28px;max-width:34rem;display:grid;gap:12px;justify-items:start}
+.beta-ok-check{width:56px;height:56px;border-radius:50%;background:var(--success-light);color:var(--success-dark);display:grid;place-items:center;margin-bottom:4px}
+.beta-ok-check svg{width:30px;height:30px}
+.beta-ok-t{font-size:1.75rem;font-weight:800;line-height:1.15}
+.beta-ok-email{font-size:1.0625rem}
+.beta-ok-email strong{overflow-wrap:anywhere}
+.beta-ok-sig{color:var(--text-2);padding-top:12px;border-top:1px solid var(--line);width:100%}
+.beta-ok-sig strong{color:var(--text)}
+@media (prefers-reduced-motion:no-preference){.beta-ok:not([hidden]){animation:entra .5s var(--ease) both}.beta-ok-check{animation:pop .5s .15s var(--ease) both}}
 
 /* ── Pie ─────────────────────────────────────────────────── */
 /* Pie organizado: marca y lema a la izquierda, dos columnas de enlaces, y una línea final con el © */
@@ -541,8 +571,9 @@ a{color:var(--brand-dark)}
       <div class="wrap">
         <h2 id="t-color">Decidid<span class="rota" aria-hidden="true"><span id="palabra">las fechas.</span></span><span class="sr">las fechas, el destino, el día a día y la maleta.</span></h2>
         <p>En un sitio, con fecha de cierre y sin 300 mensajes por medio.</p>
-        <div class="puntos" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
-      </div>
+        </div>
+      <div class="puntos" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+      <p class="sigue" aria-hidden="true">Sigue bajando<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></p>
     </div>
   </section>
 
@@ -554,20 +585,26 @@ a{color:var(--brand-dark)}
     <div class="fases-scroll">
       <div class="fases-fija">
         <div class="wrap raiz">
-          <div class="lado-movil" aria-hidden="true">
-            <div class="movil"><div class="pantalla">
+          <div class="lado-movil">
+            <ol class="fases-nav" aria-label="Fases">
+              <li><button type="button" data-ir="0" aria-current="step" aria-label="Fase 1: Invitar"><span>1</span></button></li>
+              <li><button type="button" data-ir="1" aria-label="Fase 2: Decidir"><span>2</span></button></li>
+              <li><button type="button" data-ir="2" aria-label="Fase 3: Organizar"><span>3</span></button></li>
+              <li><button type="button" data-ir="3" aria-label="Fase 4: Preparar"><span>4</span></button></li>
+            </ol>
+            <div class="movil" aria-hidden="true"><div class="pantalla">
               <img class="capa on" src="assets/capturas/invitar.png" alt="">
               <img class="capa" src="assets/capturas/sorteo.png" alt="">
               <img class="capa" src="assets/capturas/semana.png" alt="">
               <img class="capa" src="assets/capturas/maleta.png" alt="">
             </div></div>
-            <div class="progreso"><i class="hecho"></i><i></i><i></i><i></i></div>
           </div>
           <div class="pasos">
             <article class="paso on" data-paso="0"><div class="movil paso-movil"><div class="pantalla"><img src="assets/capturas/invitar.png" alt="" loading="lazy"></div></div><div class="tarj"><p class="eti">01 · Invitar</p><h3>Crea el plan e invita a tu grupo.</h3><p>Ponle nombre y comparte el enlace por WhatsApp. Tu grupo entra con un toque, y quien solo quiere mirar no necesita cuenta.</p></div></article>
             <article class="paso" data-paso="1"><div class="movil paso-movil"><div class="pantalla"><img src="assets/capturas/sorteo.png" alt="" loading="lazy"></div></div><div class="tarj"><p class="eti">02 · Decidir</p><h3>Abre la votación de fechas y destino.</h3><p>Tu grupo vota con un toque antes de la fecha de cierre. ¿Empate? Rondas de desempate y, si nadie cede, <span class="cita">sorteo</span>&nbsp;🎲.</p></div></article>
             <article class="paso" data-paso="2"><div class="movil paso-movil"><div class="pantalla"><img src="assets/capturas/semana.png" alt="" loading="lazy"></div></div><div class="tarj"><p class="eti">03 · Organizar</p><h3>Monta el día a día.</h3><p>Actividades, reservas y PDF en su día. Tu grupo también aporta, y tú puedes deshacer cualquier cambio.</p></div></article>
             <article class="paso" data-paso="3"><div class="movil paso-movil"><div class="pantalla"><img src="assets/capturas/maleta.png" alt="" loading="lazy"></div></div><div class="tarj"><p class="eti">04 · Preparar</p><h3>Prepara tu maleta.</h3><p>Elige un look para cada plan y llévate solo lo que vas a usar. Compártela y mira qué lleva el resto.</p></div></article>
+            <button type="button" class="fases-sig"><span>Siguiente: Decidir</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           </div>
         </div>
       </div>
@@ -710,7 +747,7 @@ a{color:var(--brand-dark)}
         <p id="beta-envio-error" class="error" role="alert" hidden></p>
         <button class="btn" type="submit">Apuntarme gratis</button>
       </form>
-      <div id="beta-ok" class="beta-ok" role="status" tabindex="-1" hidden><p class="beta-ok-t">¡Estás dentro! 🎉</p><p>Te escribiremos en cuanto puedas probar Keinext. Mientras, pásale la web a quien organiza en tu grupo.</p></div>
+      <div id="beta-ok" class="beta-ok" role="status" tabindex="-1" hidden><span class="beta-ok-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><p class="beta-ok-t">¡Estás dentro! 🎉</p><p class="beta-ok-email">Te hemos apuntado con <strong id="beta-ok-email"></strong>.</p><p class="beta-ok-sig"><strong>¿Y ahora?</strong> Te escribiremos a ese email en cuanto puedas probar Keinext en tu <span id="beta-ok-movil">móvil</span>. Mientras, pásale la web a quien organiza en tu grupo.</p></div>
       </div>
     </div>
   </section>
@@ -804,6 +841,7 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
       actual = i; el.textContent = palabras[i];
       el.style.animation = 'none'; el.offsetHeight; el.style.animation = '';
       puntos.forEach((d, k) => d.classList.toggle('on', k === i));
+      sec.classList.toggle('fin', i === palabras.length - 1);
     }
   };
   addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); } }, { passive: true });
@@ -813,8 +851,16 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
 (() => {
   const sec = document.querySelector('.fases-scroll');
   if (!sec || quieto) return;
-  const pasos = [...sec.querySelectorAll('.paso')], capas = [...sec.querySelectorAll('.capa')], barras = [...sec.querySelectorAll('.progreso i')];
+  const pasos = [...sec.querySelectorAll('.paso')], capas = [...sec.querySelectorAll('.capa')], botones = [...sec.querySelectorAll('.fases-nav button')];
+  const sig = sec.querySelector('.fases-sig'), nombres = ['Invitar', 'Decidir', 'Organizar', 'Preparar'];
   let actual = 0, pendiente = false;
+  // Lleva el scroll al centro del tramo de la fase n; después de la última, a la sección siguiente
+  const ir = n => {
+    const alto = sec.offsetHeight - innerHeight, arriba = sec.getBoundingClientRect().top + scrollY;
+    scrollTo({ top: n < pasos.length ? arriba + alto * (n + 0.5) / pasos.length : arriba + sec.offsetHeight, behavior: 'smooth' });
+  };
+  botones.forEach((b, k) => b.addEventListener('click', () => ir(k)));
+  sig.addEventListener('click', () => ir(actual + 1));
   const pintar = () => {
     pendiente = false;
     const r = sec.getBoundingClientRect();
@@ -824,7 +870,8 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
     actual = n;
     pasos.forEach((el, k) => el.classList.toggle('on', k === n));
     capas.forEach((el, k) => el.classList.toggle('on', k === n));
-    barras.forEach((el, k) => el.classList.toggle('hecho', k <= n));
+    botones.forEach((el, k) => { el.classList.toggle('hecho', k < n); k === n ? el.setAttribute('aria-current', 'step') : el.removeAttribute('aria-current'); });
+    sig.firstElementChild.textContent = n < pasos.length - 1 ? `Siguiente: ${nombres[n + 1]}` : 'Seguir bajando';
   };
   addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(pintar); } }, { passive: true });
 })();
@@ -902,7 +949,13 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
           : 'No hemos podido apuntarte. Revisa el email y vuelve a probar.');
       }
       medir('apuntarse', { plataforma: plat.value, origen: origen.slice(0, 100) || null });
-      f.hidden = true; const ok = document.getElementById('beta-ok'); ok.hidden = false; ok.focus();
+      const ok = document.getElementById('beta-ok');
+      document.getElementById('beta-ok-email').textContent = email.value.trim();
+      document.getElementById('beta-ok-movil').textContent = plat.value === 'ios' ? 'iPhone' : 'Android';
+      document.body.classList.add('apuntado');
+      email.blur(); f.hidden = true; ok.hidden = false; ok.focus({ preventScroll: true });
+      // Se centra cuando el teclado del móvil ya se ha cerrado, para que el éxito quede a la vista
+      setTimeout(() => ok.scrollIntoView({ block: 'center', behavior: quieto ? 'auto' : 'smooth' }), 350);
     } catch (e) {
       medir('apuntarse_error', { motivo: e instanceof TypeError ? 'conexion' : e.message });
       fallo(e instanceof TypeError ? 'No hemos podido apuntarte. Revisa tu conexión y vuelve a probar.' : e.message);
