@@ -151,6 +151,8 @@ a{color:var(--brand-dark)}
 .puntos{position:absolute;top:50%;right:max(14px,env(safe-area-inset-right,0px));transform:translateY(-50%);display:flex;flex-direction:column;gap:10px}
 .puntos i{width:6px;height:20px;border-radius:3px;background:rgba(248,236,232,.3);transition:background .3s,height .3s}
 .puntos i.on{background:var(--white);height:32px}
+/* En móvil, más discreto: es una pista, no un control (comentario de María, 11/11/2026) */
+@media (max-width:899px){.puntos{gap:6px;right:max(10px,env(safe-area-inset-right,0px))}.puntos i{width:3px;height:10px;border-radius:2px;background:rgba(248,236,232,.25)}.puntos i.on{height:18px;background:rgba(255,255,255,.85)}}
 .sigue{position:absolute;left:0;right:0;bottom:calc(28px + env(safe-area-inset-bottom,0px));margin:0 auto!important;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.8125rem!important;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--brand-lighter);transition:opacity .3s}
 .sigue svg{width:22px;height:22px}
 .color.fin .sigue{opacity:0}
