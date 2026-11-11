@@ -174,13 +174,15 @@ a{color:var(--brand-dark)}
    sirve a quien baja con el dedo y a quien prefiere pulsar. */
 .lado-movil{display:grid;grid-template-columns:44px auto 44px;align-items:center;gap:12px}
 .lado-movil .movil{pointer-events:none}
-.fases-nav{list-style:none;padding:0;display:flex;flex-direction:column;gap:2px;position:relative}
-.fases-nav::before{content:"";position:absolute;left:21px;top:22px;bottom:22px;width:2px;background:var(--line)}
-.fases-nav button{position:relative;width:44px;height:44px;display:grid;place-items:center;border:0;background:none;padding:0;cursor:pointer;font:800 .8125rem var(--f);color:var(--text-2)}
-.fases-nav span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--white);border:2px solid var(--line);transition:background .3s,border-color .3s,color .3s,transform .3s var(--ease)}
-.fases-nav .hecho span{border-color:var(--brand-lighter);background:var(--brand-lighter);color:var(--brand-dark)}
-.fases-nav [aria-current] span{background:var(--brand-dark);border-color:var(--brand-dark);color:var(--white);transform:scale(1.15)}
-.fases-nav button:hover span{border-color:var(--brand-dark)}
+.fases-nav{list-style:none;padding:0;display:flex;flex-direction:column;gap:4px}
+/* Mismo lenguaje que el resto: número en estilo .eti y una barra vertical como la de «Decidid…» */
+.fases-nav button{width:44px;height:44px;display:flex;align-items:center;gap:8px;border:0;background:none;padding:0;cursor:pointer;font:800 .75rem var(--f);letter-spacing:.12em;color:var(--text-3);transition:color .3s}
+.fases-nav button::before{content:"";flex:none;width:4px;height:20px;border-radius:2px;background:var(--line);transition:background .3s,height .3s var(--ease)}
+.fases-nav .hecho{color:var(--text-2)}
+.fases-nav .hecho::before{background:var(--brand-lighter)}
+.fases-nav [aria-current]{color:var(--brand-dark)}
+.fases-nav [aria-current]::before{background:var(--brand-dark);height:32px}
+.fases-nav button:hover{color:var(--brand-dark)}
 .fases-sig{grid-area:2/1;justify-self:center;display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:8px;padding:0 4px;border:0;background:none;cursor:pointer;font:700 1rem var(--f);color:var(--brand-dark)}
 .fases-sig svg{width:20px;height:20px}
 @media (prefers-reduced-motion:no-preference){.fases-sig svg{animation:sigue 1.6s var(--ease) infinite}}
@@ -206,7 +208,8 @@ a{color:var(--brand-dark)}
   .pasos{grid-column:1;grid-row:1}
   .paso .tarj{margin-inline:0;text-align:left}
   .paso p:not(.eti){font-size:1.0625rem}
-  .fases-sig{justify-self:start}
+  /* En escritorio va abajo y centrado, en el mismo sitio que el «Sigue bajando» de «Decidid…» */
+  .fases-sig{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));margin:0}
 }
 /* Sin movimiento: lista normal, cada fase con su pantalla, sin pantalla fija */
 @media (prefers-reduced-motion:reduce){
@@ -446,17 +449,23 @@ a{color:var(--brand-dark)}
 .form-beta .btn{width:100%}
 .form-beta .btn[disabled]{opacity:.7;cursor:progress}
 .trampa{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
-/* Test con usuarios (11/11/2026): en móvil el éxito quedaba fuera de la vista y parecía que no se había enviado.
-   Ahora ocupa el sitio del formulario, se centra en pantalla, lleva un check grande y repite el email. */
-.beta-ok{margin-top:36px;background:var(--white);color:var(--text);border-radius:28px;padding:32px 28px;max-width:34rem;display:grid;gap:12px;justify-items:start}
-.beta-ok-check{width:56px;height:56px;border-radius:50%;background:var(--success-light);color:var(--success-dark);display:grid;place-items:center;margin-bottom:4px}
-.beta-ok-check svg{width:30px;height:30px}
-.beta-ok-t{font-size:1.75rem;font-weight:800;line-height:1.15}
-.beta-ok-email{font-size:1.0625rem}
-.beta-ok-email strong{overflow-wrap:anywhere}
-.beta-ok-sig{color:var(--text-2);padding-top:12px;border-top:1px solid var(--line);width:100%}
-.beta-ok-sig strong{color:var(--text)}
-@media (prefers-reduced-motion:no-preference){.beta-ok:not([hidden]){animation:entra .5s var(--ease) both}.beta-ok-check{animation:pop .5s .15s var(--ease) both}}
+.beta-ok{position:relative;margin-top:36px;background:var(--white);color:var(--text);border-radius:28px;max-width:34rem}
+/* El éxito es un «pase» para la prueba, como una tarjeta de embarque: cabecera, datos y una línea troquelada */
+.beta-ok-cab{padding:32px 28px 24px;padding-right:120px}
+.beta-ok-t{font-size:clamp(2.4rem,10vw,3.25rem);font-weight:800;line-height:1;letter-spacing:-.03em;margin-top:10px}
+.beta-ok .cita{color:var(--text-2)}
+.beta-ok-ilu{position:absolute;top:-28px;right:16px;width:104px;transform:rotate(8deg);pointer-events:none}
+.beta-ok-datos{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;padding:0 28px 28px;margin:0}
+.beta-ok-datos .ancho{grid-column:1/-1}
+.beta-ok-datos dt{font-size:.6875rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
+.beta-ok-datos dd{margin:4px 0 0;font-weight:700;font-size:1.0625rem;overflow-wrap:anywhere}
+.beta-ok-estado{display:inline-flex;align-items:center;gap:6px;padding:2px 10px 2px 8px;border-radius:999px;background:var(--success-light);color:var(--success-dark);font-size:.875rem}
+.beta-ok-estado::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--success-dark)}
+.beta-ok-pie{position:relative;padding:24px 28px 28px;border-top:2px dashed var(--line);color:var(--text-2)}
+.beta-ok-pie strong{color:var(--text)}
+.beta-ok-pie::before,.beta-ok-pie::after{content:"";position:absolute;top:-13px;width:24px;height:24px;border-radius:50%;background:var(--brand-dark)}
+.beta-ok-pie::before{left:-12px}.beta-ok-pie::after{right:-12px}
+@media (prefers-reduced-motion:no-preference){.beta-ok:not([hidden]){animation:entra .5s var(--ease) both}.beta-ok-ilu{animation:pop .6s .2s var(--ease) both}}
 
 /* ── Pie ─────────────────────────────────────────────────── */
 /* Pie organizado: marca y lema a la izquierda, dos columnas de enlaces, y una línea final con el © */
@@ -587,10 +596,10 @@ a{color:var(--brand-dark)}
         <div class="wrap raiz">
           <div class="lado-movil">
             <ol class="fases-nav" aria-label="Fases">
-              <li><button type="button" data-ir="0" aria-current="step" aria-label="Fase 1: Invitar"><span>1</span></button></li>
-              <li><button type="button" data-ir="1" aria-label="Fase 2: Decidir"><span>2</span></button></li>
-              <li><button type="button" data-ir="2" aria-label="Fase 3: Organizar"><span>3</span></button></li>
-              <li><button type="button" data-ir="3" aria-label="Fase 4: Preparar"><span>4</span></button></li>
+              <li><button type="button" data-ir="0" aria-current="step" aria-label="Fase 1: Invitar"><span>01</span></button></li>
+              <li><button type="button" data-ir="1" aria-label="Fase 2: Decidir"><span>02</span></button></li>
+              <li><button type="button" data-ir="2" aria-label="Fase 3: Organizar"><span>03</span></button></li>
+              <li><button type="button" data-ir="3" aria-label="Fase 4: Preparar"><span>04</span></button></li>
             </ol>
             <div class="movil" aria-hidden="true"><div class="pantalla">
               <img class="capa on" src="assets/capturas/invitar.png" alt="">
@@ -747,7 +756,16 @@ a{color:var(--brand-dark)}
         <p id="beta-envio-error" class="error" role="alert" hidden></p>
         <button class="btn" type="submit">Apuntarme gratis</button>
       </form>
-      <div id="beta-ok" class="beta-ok" role="status" tabindex="-1" hidden><span class="beta-ok-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><p class="beta-ok-t">¡Estás dentro! 🎉</p><p class="beta-ok-email">Te hemos apuntado con <strong id="beta-ok-email"></strong>.</p><p class="beta-ok-sig"><strong>¿Y ahora?</strong> Te escribiremos a ese email en cuanto puedas probar Keinext en tu <span id="beta-ok-movil">móvil</span>. Mientras, pásale la web a quien organiza en tu grupo.</p></div>
+      <div id="beta-ok" class="beta-ok" role="status" tabindex="-1" hidden>
+        <img class="beta-ok-ilu" src="assets/confeti.png" alt="" width="104" height="104">
+        <div class="beta-ok-cab"><p class="eti">Lista para probar Keinext</p><p class="beta-ok-t">¡Estás <span class="cita">dentro!</span></p></div>
+        <dl class="beta-ok-datos">
+          <div class="ancho"><dt>Email</dt><dd id="beta-ok-email"></dd></div>
+          <div><dt>Móvil</dt><dd id="beta-ok-movil"></dd></div>
+          <div><dt>Estado</dt><dd><span class="beta-ok-estado">En la lista</span></dd></div>
+        </dl>
+        <p class="beta-ok-pie"><strong>¿Y ahora?</strong> Te escribiremos a ese email en cuanto puedas probar Keinext. Mientras, pásale la web a quien organiza en tu grupo.</p>
+      </div>
       </div>
     </div>
   </section>
