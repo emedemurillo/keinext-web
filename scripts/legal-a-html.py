@@ -10,7 +10,8 @@ def inline(t):
     t = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', t)
     t = re.sub(r'(?<!\w)_(.+?)_(?!\w)', r'<em>\1</em>', t)
     t = re.sub(r'`(.+?)`', r'<code>\1</code>', t)
-    t = re.sub(r'([\w.+-]+@[\w-]+\.[\w.]+)', r'<a href="mailto:\1">\1</a>', t)
+    # El dominio acaba en letra: el punto final de la frase («…hola@keinext.com.») queda fuera del enlace.
+    t = re.sub(r'([\w.+-]+@[\w-]+(?:\.[\w-]+)+)', r'<a href="mailto:\1">\1</a>', t)
     return t
 
 def md(texto):
