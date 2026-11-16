@@ -48,7 +48,7 @@ PLANTILLA = '''<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{titulo} · Keinext</title>
 <meta name="robots" content="index,follow">
-<link rel="canonical" href="https://keinext.com/{ruta}">
+<link rel="canonical" href="https://keinext.com/{ruta}/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>
 /* Open Sans servida desde keinext.com (sin Google Fonts: las visitas no mandan su IP a Google) */
