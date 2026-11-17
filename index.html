@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Keinext · Organiza viajes y planes en grupo sin caos</title>
-<meta name="description" content="La app para decidir y organizar planes en grupo: votad fechas y destino, montad el día a día y tened las reservas a mano. En español y gratis. Pruébala antes que nadie.">
+<meta name="description" content="La app para decidir y organizar planes en grupo: votad fechas y destino, montad el día a día y tened las reservas a mano. En español. Pruébala antes que nadie.">
 <link rel="canonical" href="https://keinext.com/">
 <meta name="theme-color" content="#f9f6f4">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -74,7 +74,7 @@
      "name": "¿Cuánto cuesta?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Ahora mismo, nada: es gratis."
+      "text": "Ahora mismo, nada: no tiene coste."
      }
     },
     {
@@ -146,7 +146,7 @@
   --sand:#f9f6f4;           /* Background-Sand */
   --bg-main:#f9f9f9;        /* Color-Background-Main (fondo de la app) */
   --white:#ffffff;
-  --error:#a3483b;          /* Color-Error-Main */
+  --error:#b3261e;          /* Color-Error-Main */
   --success-light:#cad3c7;  /* Color-Success-Light · Green/200 */
   --success-dark:#253024;   /* Color-Success-Dark · Green/900 */
   --text:#2b2421;           /* Color-Text-Main */
@@ -631,7 +631,7 @@ a{color:var(--brand-dark)}
           <p class="sub entra">La app para decidir y organizar planes en grupo. Sin perseguir a nadie.</p>
           <div class="cta entra">
             <a class="btn" href="#unirse">Probar Keinext <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-            <small>Gratis. Te avisamos en cuanto puedas usarla.</small>
+            <small>Te avisamos en cuanto puedas usarla.</small>
           </div>
         </div>
         <div class="escena" id="escena">
@@ -806,7 +806,7 @@ a{color:var(--brand-dark)}
     <div class="wrap faq-grid">
       <div><p class="eti">Preguntas frecuentes</p><h2 id="t-faq" class="sec-h2">Lo que queréis saber <span class="cita">antes de apuntaros.</span></h2></div>
       <div class="faq-lista">
-        <details><summary>¿Cuánto cuesta?</summary><p>Ahora mismo, nada: es gratis.</p></details>
+        <details><summary>¿Cuánto cuesta?</summary><p>Ahora mismo, nada: no tiene coste.</p></details>
         <details><summary>¿Todo el grupo se tiene que bajar la app?</summary><p>No. Con el enlace pueden ver el plan sin cuenta. Para votar o proponer, sí necesitan la app.</p></details>
         <details><summary>¿Tiene chat?</summary><p>No, a propósito. La charla sigue en vuestro grupo; Keinext es donde queda lo decidido.</p></details>
         <details><summary>¿Y los gastos del viaje?</summary><p>Ya puedes apuntar el precio de cada reserva y actividad, y si se paga a partes iguales o cada quien lo suyo. Repartir las cuentas y ver quién debe a quién llegará más adelante.</p></details>
@@ -844,7 +844,7 @@ a{color:var(--brand-dark)}
       <h2 id="t-final" class="sec-h2">¿Te apuntas al <span class="cita">próximo plan?</span></h2>
       <p class="sub-final">Apúntate, pruébala antes que nadie y ayúdanos a dejar el <span class="cita">¿cuándo podéis?</span> en el pasado.</p>
       <ul class="garantias">
-        <li>Gratis, sin tarjeta.</li>
+        <li>Sin tarjeta y sin coste.</li>
         <li>Solo te escribimos para avisarte.</li>
         <li>Te das de baja cuando quieras.</li>
       </ul>
@@ -857,7 +857,7 @@ a{color:var(--brand-dark)}
         <div class="trampa" aria-hidden="true"><label for="beta-web">Web</label><input id="beta-web" name="web" type="text" tabindex="-1" autocomplete="off"></div>
         <div class="campo"><div id="turnstile"></div><p id="beta-reto-error" class="error" hidden>Confirma que no eres un robot y vuelve a pulsar.</p></div>
         <p id="beta-envio-error" class="error" role="alert" hidden></p>
-        <button class="btn" type="submit">Apuntarme gratis</button>
+        <button class="btn" type="submit">Apuntarme</button>
       </form>
       <div id="beta-ok" class="beta-ok" role="status" tabindex="-1" hidden>
         <img class="beta-ok-ilu" src="assets/confeti.png" alt="" width="104" height="104">
@@ -1081,7 +1081,7 @@ const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
       medir('apuntarse_error', { motivo: e instanceof TypeError ? 'conexion' : e.message });
       fallo(e instanceof TypeError ? 'No hemos podido apuntarte. Revisa tu conexión y vuelve a probar.' : e.message);
       if (widget !== null && window.turnstile) turnstile.reset(widget);
-    } finally { boton.disabled = false; boton.textContent = 'Apuntarme gratis'; }
+    } finally { boton.disabled = false; boton.textContent = 'Apuntarme'; }
   });
 })();
 </script>

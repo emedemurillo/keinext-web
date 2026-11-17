@@ -2,7 +2,7 @@
 
 > Keinext es una app móvil (iPhone y Android), en español de España, para que grupos de amigos decidan y organicen juntos viajes, despedidas y escapadas. Sustituye las encuestas de WhatsApp, los documentos compartidos y las capturas de reservas por un tablón oficial del plan.
 
-Estado: en desarrollo; la beta será para iPhone y Android. Ahora mismo es gratis. Lista de espera en https://keinext.com/#unirse
+Estado: en desarrollo; la beta será para iPhone y Android. Ahora mismo no tiene coste. Lista de espera en https://keinext.com/#unirse
 
 ## Qué hace
 - Crear un plan e invitar al grupo con un enlace (por WhatsApp, por ejemplo).
